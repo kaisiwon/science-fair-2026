@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathQuest - Market Tycoon</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="number-forge.css">
+    <link rel="stylesheet" href="market-tycoon.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-over-overlay" id="game-over-overlay">
+            <div class="game-over-panel">
+                <h2>Game Over</h2>
+                <p>Your final net worth is: <strong id="final-net-worth">$0</strong></p>
+                <button id="play-again-btn" class="control-btn primary">Play Again</button>
+            </div>
+        </div>
+        <div class="leaderboard-overlay" id="leaderboard-overlay">
+            <div class="leaderboard-panel">
+                <h2>High Scores</h2>
+                <ol id="high-scores-list"></ol>
+                <button id="close-leaderboard-btn" class="control-btn">Close</button>
+            </div>
+        </div>
+        <header class="game-header">
+            <div class="header-top-row">
+                <div class="stats-display">
+                    <span>Day: <span id="day-display">1</span></span>
+                    <span>Cash: $<span id="cash-display">1000</span></span>
+                </div>
+                <button id="leaderboard-btn" class="icon-btn">🏆</button>
+                <button id="mute-btn" class="icon-btn">🔇</button>
+                <button id="logout-btn" class="icon-btn">🚪</button>
+            </div>
+            <h1>Market Tycoon</h1>
+        </header>
+
+        <main class="game-board">
+            <div class="chart-container">
+                <canvas id="price-chart"></canvas>
+            </div>
+            <div class="event-card" id="event-card">
+                <h3 id="event-title">Market Open</h3>
+                <p id="event-description">Prices are stable. Plan your trades for the day.</p>
+            </div>
+            <div class="loan-section" id="loan-section">
+                <h4>Galactic Bank</h4>
+                <div class="debt-display">Debt: $<span id="debt-display">0</span></div>
+                <div class="trade-controls">
+                    <button class="control-btn" data-action="borrow">Borrow $500</button>
+                    <button class="control-btn" data-action="repay">Repay $500</button>
+                </div>
+            </div>
+            <div class="inventory-section" id="inventory-section"></div>
+        </main>
+        <footer class="controls-section">
+            <button id="next-day-btn" class="control-btn primary">Next Day</button>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="market-tycoon.js"></script>
+</body>
+</html>

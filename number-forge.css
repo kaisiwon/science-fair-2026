@@ -1,0 +1,448 @@
+:root {
+    --bg-color: #1a1a2e;
+    --primary-color: #16213e;
+    --secondary-color: #0f3460;
+    --accent-color: #e94560;
+    --font-color: #dcdcdc;
+    --font-family-display: 'Orbitron', sans-serif;
+    --font-family-body: 'Roboto', sans-serif;
+    --card-bg: #2a2a4a;
+    --card-hover-bg: #3a3a6a;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family-body);
+    background-color: var(--bg-color);
+    color: var(--font-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--primary-color);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.leaderboard-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 26, 46, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 250;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.leaderboard-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.leaderboard-panel {
+    background: var(--primary-color);
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    width: 90%;
+    max-width: 320px;
+}
+
+#high-scores-list {
+    list-style: decimal;
+    padding-left: 2rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.tutorial-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 26, 46, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 300;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.tutorial-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.tutorial-panel {
+    display: none; /* Hide all panels by default */
+    background: var(--primary-color);
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    width: 90%;
+    max-width: 350px;
+}
+
+.tutorial-panel.active {
+    display: block; /* Show the active panel */
+}
+
+.tutorial-panel p { margin: 1rem 0 2rem 0; line-height: 1.5; }
+
+.settings-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 26, 46, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 200;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.settings-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.settings-panel {
+    background: var(--primary-color);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    width: 90%;
+    max-width: 320px;
+}
+
+.level-up-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(22, 33, 62, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.level-up-overlay.active {
+    animation: fadeInOut 2s ease-in-out forwards;
+}
+
+.level-up-text {
+    font-family: var(--font-family-display);
+    font-size: 3.5rem;
+    color: var(--accent-color);
+    text-shadow: 0 0 15px var(--accent-color);
+    transform: scale(0.5);
+    opacity: 0;
+}
+
+.level-up-overlay.active .level-up-text {
+    animation: scaleUp 2s ease-in-out forwards;
+}
+
+.game-header {
+    background-color: var(--secondary-color);
+    padding: 0.75rem 1rem 1rem 1rem;
+    text-align: center;
+}
+
+.header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-display {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 0 0.5rem;
+    color: var(--font-color);
+    opacity: 0.9;
+    flex-grow: 1;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    cursor: pointer;
+    color: var(--font-color);
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.timer-display {
+    font-family: var(--font-family-display);
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    margin: 0 0.5rem;
+    min-width: 30px;
+    text-align: center;
+}
+
+.game-header h1 {
+    font-family: var(--font-family-display);
+    font-size: 1.75rem;
+    color: var(--accent-color);
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+.game-board {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.target-section {
+    text-align: center;
+}
+
+.target-section h2 {
+    font-family: var(--font-family-body);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: var(--font-color);
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+}
+
+.target-number-display {
+    font-family: var(--font-family-display);
+    font-size: 4rem;
+    font-weight: 900;
+    color: #fff;
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 2px solid var(--accent-color);
+}
+
+.expression-section {
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    min-height: 60px;
+    padding: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-family: var(--font-family-display);
+    font-size: 2rem;
+    overflow-x: auto;
+    border: 1px solid var(--secondary-color);
+}
+
+.player-hand-section h3,
+.operators-section h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    perspective: 1000px; /* Adds 3D space for the flip effect */
+    gap: 10px;
+    flex-wrap: wrap; /* Allow cards to wrap to the next line */
+}
+
+.card {
+    font-family: var(--font-family-display);
+    font-size: 2rem;
+    font-weight: 700;
+    width: 60px;
+    height: 80px;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--card-bg);
+    color: var(--font-color);
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease; /* Keep for hover effects */
+    transform-style: preserve-3d; /* Ensures children are in 3D space */
+    animation: flipIn 0.6s ease-out forwards; /* Apply the flip animation */
+    opacity: 0; /* Start cards as invisible */
+}
+
+.card:hover {
+    background-color: var(--card-hover-bg);
+    transform: translateY(-5px);
+}
+
+.card:active {
+    transform: translateY(-2px);
+}
+
+/* New style for cards that have been used in the expression */
+.card.used {
+    opacity: 0.4;
+    pointer-events: none; /* Disables clicks and hover effects */
+}
+
+.card.operator-card {
+    color: var(--accent-color);
+}
+
+/* The flip-in animation */
+@keyframes flipIn {
+    from {
+        transform: rotateY(90deg);
+        opacity: 0;
+    }
+    to {
+        transform: rotateY(0deg);
+        opacity: 1;
+    }
+}
+
+/* Stagger the animation for each card */
+#player-hand .card:nth-child(1) { animation-delay: 0.1s; }
+#player-hand .card:nth-child(2) { animation-delay: 0.2s; }
+#player-hand .card:nth-child(3) { animation-delay: 0.3s; }
+#player-hand .card:nth-child(4) { animation-delay: 0.4s; }
+
+#operators .card:nth-child(1) { animation-delay: 0.5s; }
+#operators .card:nth-child(2) { animation-delay: 0.6s; }
+#operators .card:nth-child(3) { animation-delay: 0.7s; }
+#operators .card:nth-child(4) { animation-delay: 0.8s; }
+#operators .card:nth-child(5) { animation-delay: 0.9s; }
+#operators .card:nth-child(6) { animation-delay: 1.0s; }
+
+/* Animation for the level up overlay fade */
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; visibility: hidden; }
+    20%, 80% { opacity: 1; visibility: visible; }
+}
+
+/* Animation for the level up text scaling */
+@keyframes scaleUp {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    20% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    80% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% { transform: scale(1); opacity: 0; }
+}
+
+/* Shake animation for invalid moves */
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+.shake {
+  /* Apply the shake animation to the element */
+  animation: shake 0.5s ease-in-out;
+}
+
+.shake-target {
+  /* A class to apply the shake to the target number display */
+  animation: shake 0.5s ease-in-out;
+}
+
+.controls-section {
+    display: flex;
+    gap: 0.5rem; /* Reduced gap between buttons */
+    padding: 1.5rem;
+    background-color: var(--secondary-color);
+}
+
+.control-btn {
+    /* Allow buttons to shrink but not grow, to fit available space */
+    flex-grow: 0;
+    flex-shrink: 1;
+    padding: 0.8rem 0.5rem; /* Reduced padding */
+    font-size: 1rem; /* Reduced font size */
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background-color: var(--card-bg);
+    color: var(--font-color);
+}
+
+.control-btn.primary {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.control-btn.danger {
+    background-color: #c0392b; /* A distinct red for warning */
+    color: #fff;
+}
+
+.setting-item {
+    margin-bottom: 2rem;
+}
+
+.setting-item label {
+    display: block;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+}
+
+.control-btn:hover {
+    filter: brightness(1.2);
+}
