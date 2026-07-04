@@ -12,15 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openDB() {
         return new Promise((resolve, reject) => {
-            // Use version 3 to add the new 'users' store
-            const request = indexedDB.open(DB_NAME, 3);
+            // Open the database with the latest version. The schema is managed
+            // by the main game files, not the login page.
+            const request = indexedDB.open(DB_NAME, 4);
 
-            request.onupgradeneeded = event => {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains(USERS_STORE)) {
-                    db.createObjectStore(USERS_STORE, { keyPath: 'username' });
-                }
-            };
             request.onsuccess = () => {
                 db = request.result;
                 resolve(db);

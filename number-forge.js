@@ -63,19 +63,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function openDB() {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, 3); // Match version from login.js
+            // This is the single source of truth for the DB schema.
+            // Any new stores or indexes should be added here.
+            const request = indexedDB.open(DB_NAME, 4); // Incremented version
 
             request.onupgradeneeded = event => {
                 const db = event.target.result;
+                // Create all object stores here to ensure consistency.
+                if (!db.objectStoreNames.contains('users')) {
+                    db.createObjectStore('users', { keyPath: 'username' });
+                }
                 if (!db.objectStoreNames.contains(GAME_STATE_STORE)) {
                     db.createObjectStore(GAME_STATE_STORE, { keyPath: 'id' });
                 }
                 if (!db.objectStoreNames.contains(HIGH_SCORES_STORE)) {
                     const scoreStore = db.createObjectStore(HIGH_SCORES_STORE, { autoIncrement: true });
-                    scoreStore.createIndex('score', 'score', { unique: false });
-                }
-                if (!db.objectStoreNames.contains('users')) {
-                    db.createObjectStore('users', { keyPath: 'username' });
+                    scoreStore.createIndex('score', 'score', { unique: false }); // For general high scores
+                    scoreStore.createIndex('game', 'game', { unique: false }); // To filter by game
                 }
             };
 

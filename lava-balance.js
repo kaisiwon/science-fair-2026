@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openDB() {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, 3); // Match version from other game files
+            const request = indexedDB.open(DB_NAME, 4); // Use latest version
             request.onsuccess = () => {
                 db = request.result;
                 resolve(db);
