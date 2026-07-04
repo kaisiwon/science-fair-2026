@@ -1,20 +1,20 @@
 const CACHE_NAME = 'number-forge-v1';
 const URLS_TO_CACHE = [
-    'index.html',
-    'game-select.html',
-    'number-forge.html',
-    'lava-balance.html',
-    'market-tycoon.html',
-    'number-forge.css',
-    'lava-balance.css',
-    'market-tycoon.css',
-    'login.css',
-    'game-select.css',
-    'login.js',
-    'game-select.js',
-    'number-forge.js',
-    'lava-balance.js',
-    'market-tycoon.js'
+    './index.html',
+    './game-select.html',
+    './number-forge.html',
+    './lava-balance.html',
+    './market-tycoon.html',
+    './number-forge.css',
+    './lava-balance.css',
+    './market-tycoon.css',
+    './login.css',
+    './game-select.css',
+    './login.js',
+    './game-select.js',
+    './number-forge.js',
+    './lava-balance.js',
+    './market-tycoon.js'
 ];
 
 // Install the service worker and cache the app shell
