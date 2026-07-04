@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathQuest - Lava Balance</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="number-forge.css">
+    <link rel="stylesheet" href="lava-balance.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-over-overlay" id="game-over-overlay">
+            <div class="game-over-panel">
+                <h2>Game Over</h2>
+                <p>You survived for <strong id="final-time">0</strong> seconds!</p>
+                <button id="play-again-btn" class="control-btn primary">Play Again</button>
+            </div>
+        </div>
+        <div class="leaderboard-overlay" id="leaderboard-overlay">
+            <div class="leaderboard-panel">
+                <h2>High Scores</h2>
+                <ol id="high-scores-list"></ol>
+                <button id="close-leaderboard-btn" class="control-btn">Close</button>
+            </div>
+        </div>
+
+        <header class="game-header">
+            <div class="header-top-row">
+                <div class="stats-display">
+                    <span>Time: <span id="time-display">0</span>s</span>
+                </div>
+                <button id="leaderboard-btn" class="icon-btn">🏆</button>
+                <button id="logout-btn" class="icon-btn">🚪</button>
+            </div>
+            <h1>Lava Balance</h1>
+        </header>
+
+        <main class="game-board">
+            <div id="canvas-container">
+                <!-- The Matter.js canvas will be inserted here -->
+            </div>
+        </main>
+
+        <footer class="input-section">
+            <form id="angle-form">
+                <label for="angle-input">Rotation Angle (°):</label>
+                <input type="number" id="angle-input" placeholder="e.g., 15" step="any" autocomplete="off">
+                <button type="submit" class="control-btn primary">Rotate</button>
+            </form>
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="lava-balance.js"></script>
+</body>
+</html>

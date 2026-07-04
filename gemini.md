@@ -56,16 +56,6 @@ Below are the high-level epics for building out this project. Each epic will be 
 
 ---
 
-### **Epic 3: Core Gameplay - Vector Vector**
-*   **Goal:** Build the main gameplay loop for the Vector Vector concept.
-*   **Stories:**
-    *   As a player, I want to see a game area rendered on an HTML5 Canvas with a base to defend and incoming enemies.
-    *   As a player, I want to have an input area where I can type in coordinates or a simple equation (`y = mx + b`).
-    *   As a player, I want to press a "Fire" button that launches a projectile along the path I defined.
-    *   As a player, I want to see projectiles collide with enemies based on a 2D physics engine.
-
----
-
 ### **Epic 4: Core Gameplay - Market Tycoon**
 *   **Goal:** Build the main gameplay loop for the Market Tycoon concept.
 *   **Stories:**

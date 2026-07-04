@@ -1,0 +1,47 @@
+.game-over-overlay, .leaderboard-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 26, 46, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 250;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.game-over-overlay.active, .leaderboard-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.game-over-panel, .leaderboard-panel {
+    background: var(--primary-color);
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    width: 90%;
+    max-width: 320px;
+}
+
+.game-over-panel p {
+    margin: 1rem 0 2rem 0;
+    font-size: 1.1rem;
+}
+
+.input-section {
+    padding: 1rem;
+    background-color: var(--secondary-color);
+}
+
+#angle-form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}

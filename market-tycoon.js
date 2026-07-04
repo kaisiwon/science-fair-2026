@@ -256,15 +256,18 @@ document.addEventListener('DOMContentLoaded', () => {
         // Record new prices in history
         for (const key in RESOURCES) {
             gameState.priceHistory[key].push(gameState.prices[key]);
-        }
+        }k,hjn
 
         updateUI();
+        checkGameOver(); // Check for game over after prices and debt change.
+
     }
 
     function checkGameOver() {
         const totalInventory = Object.values(gameState.inventory).reduce((sum, val) => sum + val, 0);
-        if (gameState.cash <= 0 && totalInventory <= 0) {
-            const netWorth = calculateNetWorth();
+       const isBankrupt = gameState.cash <= 0 && totalInventory <= 0;
+        const isOverleveraged = gameState.debt > 0 && gameState.debt > gameState.cash;
+        if (isBankrupt || isOverleveraged) {            const netWorth = calculateNetWorth();
             finalNetWorthDisplay.textContent = `$${netWorth.toFixed(2)}`;
             gameOverOverlay.classList.add('active');
             saveHighScore(netWorth);

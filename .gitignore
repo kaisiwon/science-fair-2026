@@ -1,0 +1,10 @@
+# General
+.DS_Store
+*.log
+
+# IDE/Editor specific
+.vscode/
+
+# Node.js dependencies (if you ever add them)
+node_modules/
+npm-debug.log

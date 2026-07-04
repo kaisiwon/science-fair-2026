@@ -3,17 +3,17 @@ const URLS_TO_CACHE = [
     'index.html',
     'game-select.html',
     'number-forge.html',
-    'vector-vector.html',
+    'lava-balance.html',
     'market-tycoon.html',
     'number-forge.css',
-    'vector-vector.css',
+    'lava-balance.css',
     'market-tycoon.css',
     'login.css',
     'game-select.css',
     'login.js',
     'game-select.js',
     'number-forge.js',
-    'vector-vector.js',
+    'lava-balance.js',
     'market-tycoon.js'
 ];
 
