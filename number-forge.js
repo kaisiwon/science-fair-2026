@@ -203,11 +203,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Audio Setup ---
     const SOUNDS = {
-        click: 'file:///Users/kai/Downloads/Mouseclick%20-%20QuickSounds.com.mp3',
-        success: 'audio/success.mp3',
-        levelUp: 'audio/levelup.mp3',
-        error: 'audio/error.mp3',
-        delete: 'audio/delete.mp3'
+        click: './audio/click.mp3',
+        success: './audio/success.mp3',
+        levelUp: './audio/levelup.mp3',
+        error: './audio/error.mp3',
+        delete: './audio/delete.mp3'
     };
 
     /**

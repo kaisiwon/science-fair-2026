@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Record new prices in history
         for (const key in RESOURCES) {
             gameState.priceHistory[key].push(gameState.prices[key]);
-        }k,hjn
+        }
 
         updateUI();
         checkGameOver(); // Check for game over after prices and debt change.
