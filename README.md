@@ -17,11 +17,11 @@ We are exploring three distinct game concepts, each targeting different mathemat
 *   **Math Focus:** Pre-Algebra, Order of Operations (PEMDAS/BODMAS), Factoring.
 *   **Gameplay:** Players are given a "Target Number" and a hand of resource numbers. They must use mathematical operators (+, -, ×, ÷) to combine their numbers and hit the target, defeating monsters or crafting items in a dungeon-crawl setting. Replayability comes from random numbers, procedural maps, and unlockable upgrades like exponents or brackets.
 
-### 2. Vector Vector (The Physics Sandbox)
-*   **Math Focus:** Coordinate Geometry, Vectors, Angles, and linear equations (`y = mx + b`).
-*   **Gameplay:** A tower-defense or spaceship navigation game where players don't use a joystick. Instead, they plot trajectories for projectiles or ship movements by inputting vectors, coordinates, or equations. The fun is in seeing their mathematical inputs create real-time physics-based results.
+### 2. Lava Balance (The Physics Challenge)
+*   **Math Focus:** Angles, Physics Simulation, and Reaction Time.
+*   **Gameplay:** A physics-based survival game where players must keep a bowl of lava balanced. The bowl tilts to random angles, and the player must input corrective angles to prevent the lava from spilling. The goal is to survive as long as possible, making it a game of constant, reactive adjustments.
 
-### 3. Market Tycoon: Edge of Chaos (The Simulation Game)
+### 3. Market Tycoon (The Simulation Game)
 *   **Math Focus:** Statistics, Probability, Percentages, and Graph Literacy.
 *   **Gameplay:** Players manage a business (like a space station or theme park) by analyzing real-time data streams, charts, and graphs. They must make quick decisions on buying, selling, and resource allocation based on calculating probabilities and interpreting trends to maximize their net worth.
 
@@ -32,6 +32,6 @@ We are exploring three distinct game concepts, each targeting different mathemat
 *   **Frontend:** HTML5, CSS3, JavaScript (ES6+)
 *   **PWA Features:** Service Workers for offline caching, Web App Manifest for installability.
 *   **State Management:** IndexedDB for persisting game state instantly (e.g., saving a "Number Forge" run).
-*   **Graphics (for Concept 2):** HTML5 Canvas API, potentially with a lightweight 2D physics library like Matter.js.
+*   **Physics & Graphics:** HTML5 Canvas API with Matter.js for the 2D physics simulation in "Lava Balance".
 
 This `README.md` will serve as the front page for your project, helping anyone who discovers it understand its purpose and scope.

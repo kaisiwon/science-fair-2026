@@ -25,7 +25,7 @@ This is our most critical first step. Before writing code, we must understand ou
 ### 2. Define (Next Phase)
 
 Based on the "Empathize" findings, we will define a clear problem statement.
-*   **Example:** "8th-grade students struggle with understanding how variables in linear equations (`y = mx + b`) affect the slope of a line. They need a way to visualize this relationship in a dynamic and engaging way."
+*   **Example:** "6th-8th grade students struggle with multi-step problems and remembering the order of operations (PEMDAS). They need a way to practice these skills in a format that feels more like a puzzle or a game rather than a worksheet."
 
 ### 3. Ideate
 
