@@ -105,7 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!db || newScore <= 0) return;
         const transaction = db.transaction([HIGH_SCORES_STORE], 'readwrite');
         const store = transaction.objectStore(HIGH_SCORES_STORE);
-        store.add({ score: newScore, date: new Date(), userId: currentUserId });
+        // Add a 'game' identifier to distinguish scores from other games.
+        store.add({ score: newScore, date: new Date(), userId: currentUserId, game: 'MarketTycoon' });
     }
 
     function displayLeaderboard() {
@@ -124,11 +125,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const cursor = event.target.result;
             if (cursor && count < 10) { // Display top 10 scores
                 const scoreData = cursor.value;
-                const li = document.createElement('li');
-                const username = scoreData.userId && scoreData.userId.startsWith('guest-') ? 'Anonymous' : scoreData.userId;
-                li.textContent = `$${scoreData.score.toFixed(2)} - ${username || 'Anonymous'}`;
-                highScoresList.appendChild(li);
-                count++;
+                // Only display scores for this specific game.
+                if (scoreData.game === 'MarketTycoon') {
+                    const li = document.createElement('li');
+                    const username = scoreData.userId && scoreData.userId.startsWith('guest-') ? 'Anonymous' : scoreData.userId;
+                    li.textContent = `$${scoreData.score.toFixed(2)} - ${username || 'Anonymous'}`;
+                    highScoresList.appendChild(li);
+                    count++;
+                }
                 cursor.continue();
             }
         };
