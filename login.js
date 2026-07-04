@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+tdocument.addEventListener('DOMContentLoaded', () => {
     const guestLoginBtn = document.getElementById('guest-login-btn');
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
@@ -61,11 +61,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const username = document.getElementById('signup-username').value.trim();
-        const password = document.getElementById('signup-password').value;
+        const usernameInput = document.getElementById('signup-username');
+        const passwordInput = document.getElementById('signup-password'); // Already defined
+        const confirmPasswordInput = document.getElementById('signup-password-confirm');
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
 
         if (!username || !password) {
             alert('Username and password cannot be empty.');
+            return;
+        }
+
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            alert('Passwords do not match. Please try again.');
+            passwordInput.value = '';
+            confirmPasswordInput.value = '';
+            return;
+        }
+
+        // Password complexity validation
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\d\W]).{5,}$/;
+        if (!passwordRegex.test(password)) {
+            alert('Password must be at least 5 characters long and include at least one uppercase letter, one lowercase letter, and one number or symbol.');
             return;
         }
 
@@ -82,6 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Add new user
                 store.add({ username, password: hashedPassword });
                 alert('Account created successfully! Please log in.');
+                usernameInput.value = ''; // Clear username field
+                passwordInput.value = ''; // Clear password field
+                confirmPasswordInput.value = ''; // Clear confirm password field
                 showLoginLink.click(); // Switch to login form
             }
         };
@@ -117,6 +139,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
     });
+
+    // --- Live Password Validation ---
+    const passwordInput = document.getElementById('signup-password');
+    const requirementsContainer = document.getElementById('password-requirements');
+    const reqs = {
+        length: document.getElementById('req-length'),
+        lower: document.getElementById('req-lower'),
+        upper: document.getElementById('req-upper'),
+        symbol: document.getElementById('req-symbol')
+    };
+
+    passwordInput.addEventListener('focus', () => {
+        requirementsContainer.style.display = 'block';
+    });
+
+    passwordInput.addEventListener('blur', () => {
+        requirementsContainer.style.display = 'none';
+    });
+
+    passwordInput.addEventListener('input', () => {
+        const value = passwordInput.value;
+        // Check length
+        reqs.length.classList.toggle('valid', value.length >= 5);
+        // Check for lowercase letter
+        reqs.lower.classList.toggle('valid', /[a-z]/.test(value));
+        // Check for uppercase letter
+        reqs.upper.classList.toggle('valid', /[A-Z]/.test(value));
+        // Check for number or symbol
+        reqs.symbol.classList.toggle('valid', /[\d\W]/.test(value));
+    });
+
 
     openDB().catch(err => console.error('Failed to open DB for login:', err));
 });

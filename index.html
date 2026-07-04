@@ -29,6 +29,15 @@
             <form id="signup-form" class="auth-form">
                 <input type="text" id="signup-username" placeholder="Username" required>
                 <input type="password" id="signup-password" placeholder="Password" required>
+                <div id="password-requirements">
+                    <ul>
+                        <li id="req-length">At least 5 characters</li>
+                        <li id="req-lower">A lowercase letter</li>
+                        <li id="req-upper">An uppercase letter</li>
+                        <li id="req-symbol">A number or symbol</li>
+                    </ul>
+                </div>
+                <input type="password" id="signup-password-confirm" placeholder="Confirm Password" required>
                 <button type="submit" class="control-btn primary">Sign Up</button>
                 <p class="form-toggle">Have an account? <a href="#" id="show-login">Login</a></p>
             </form>

@@ -27,6 +27,58 @@ document.addEventListener('DOMContentLoaded', () => {
     let targetAngle = 0;
     const TILT_SPEED = 0.0025; // Radians per update. Faster for more challenge.
 
+    // --- IndexedDB Setup ---
+    let db;
+    const DB_NAME = 'NumberForgeDB';
+    const HIGH_SCORES_STORE = 'highScores';
+
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, 3); // Match version from other game files
+            request.onsuccess = () => {
+                db = request.result;
+                resolve(db);
+            };
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    function saveHighScore(newScore) {
+        if (!db || newScore <= 0) return;
+        const transaction = db.transaction([HIGH_SCORES_STORE], 'readwrite');
+        const store = transaction.objectStore(HIGH_SCORES_STORE);
+        // Add a specific game identifier to distinguish scores
+        store.add({ score: newScore, date: new Date(), userId: currentUserId, game: 'LavaBalance' });
+    }
+
+    function displayLeaderboard() {
+        if (!db) return;
+        const transaction = db.transaction([HIGH_SCORES_STORE], 'readonly');
+        const store = transaction.objectStore(HIGH_SCORES_STORE);
+        const index = store.index('score');
+        const highScoresList = document.getElementById('high-scores-list');
+        highScoresList.innerHTML = ''; // Clear previous list
+
+        const request = index.openCursor(null, 'prev'); // 'prev' for descending order
+        let count = 0;
+        request.onsuccess = event => {
+            const cursor = event.target.result;
+            if (cursor && count < 10) {
+                const scoreData = cursor.value;
+                // Only show scores for this specific game
+                if (scoreData.game === 'LavaBalance') {
+                    const li = document.createElement('li');
+                    const username = scoreData.userId && scoreData.userId.startsWith('guest-') ? 'Anonymous' : scoreData.userId;
+                    li.textContent = `${scoreData.score.toFixed(1)}s - ${username || 'Anonymous'}`;
+                    highScoresList.appendChild(li);
+                    count++;
+                }
+                cursor.continue();
+            }
+        };
+        leaderboardOverlay.classList.add('active');
+    }
+
     // --- Matter.js Setup ---
     const engine = Engine.create();
     const world = engine.world;
@@ -132,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const randomAngleDegrees = Math.random() * 90 - 45; // -45 to +45 degrees
                 targetAngle = randomAngleDegrees * (Math.PI / 180);
             }
-        }, 5000);
+        }, 2500); // Choose a new angle every 2.5 seconds instead of 5
     }
 
     function updateTimer() {
@@ -149,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const finalTime = ((Date.now() - startTime) / 1000).toFixed(1);
         finalTimeDisplay.textContent = finalTime;
         gameOverOverlay.classList.add('active');
-        // TODO: Save high score to IndexedDB
+        saveHighScore(parseFloat(finalTime));
     }
 
     // --- Event Handlers ---
@@ -190,12 +242,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     playAgainBtn.addEventListener('click', startGame);
+    leaderboardBtn.addEventListener('click', displayLeaderboard);
+    closeLeaderboardBtn.addEventListener('click', () => leaderboardOverlay.classList.remove('active'));
+
     logoutBtn.addEventListener('click', () => {
+        // Save score on logout if the game is currently running
+        if (!isGameOver) {
+            const finalTime = ((Date.now() - startTime) / 1000);
+            saveHighScore(finalTime);
+        }
         sessionStorage.removeItem('currentUserId');
         window.location.href = 'index.html';
     });
-    // TODO: Add leaderboard functionality
 
     // --- Initial Start ---
+    openDB();
     startGame();
 });

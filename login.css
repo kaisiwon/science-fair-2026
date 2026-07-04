@@ -63,3 +63,27 @@
     color: var(--accent-color);
     text-decoration: none;
 }
+
+#password-requirements {
+    display: none; /* Hidden by default */
+    text-align: left;
+    font-size: 0.8rem;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+#password-requirements ul {
+    list-style: none;
+    padding: 0;
+}
+
+#password-requirements li {
+    color: #c0392b; /* Red for invalid requirement */
+    transition: color 0.3s ease;
+}
+
+#password-requirements li.valid {
+    color: #2ecc71; /* Green for valid requirement */
+    text-decoration: line-through;
+}
