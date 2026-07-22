@@ -33,6 +33,16 @@ self.addEventListener('install', event => {
 
 // Serve cached content when offline
 self.addEventListener('fetch', event => {
+    // We only want to handle GET requests.
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
+    // We only want to handle http and https requests.
+    if (!event.request.url.startsWith('http')) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then(response => {
@@ -40,6 +50,7 @@ self.addEventListener('fetch', event => {
                 if (response) {
                     return response;
                 }
+
                 // IMPORTANT: Clone the request. A request is a stream and
                 // can only be consumed once. Since we are consuming this
                 // once by cache and once by the browser for fetch, we need
@@ -49,6 +60,7 @@ self.addEventListener('fetch', event => {
                 return fetch(fetchRequest).then(
                     response => {
                         // Check if we received a valid response
+                        // Only cache basic responses (same-origin). Opaque responses (cross-origin without CORS) have a status of 0, which we don't want to cache.
                         if (!response || response.status !== 200 || response.type !== 'basic') {
                             return response;
                         }
@@ -62,7 +74,12 @@ self.addEventListener('fetch', event => {
 
                         return response;
                     }
-                );
+                ).catch(err => {
+                    // This is likely a network error, such as being offline.
+                    // The request will fail, but we can't do much about it here.
+                    console.log('Service Worker: Fetch failed:', err);
+                    // Optionally, you could return a fallback offline page here.
+                });
             })
     );
 });

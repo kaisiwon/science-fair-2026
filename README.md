@@ -43,6 +43,27 @@ This `README.md` will serve as the front page for your project, helping anyone w
 
 ---
 
+## Running Locally
+
+To run this application locally in development mode, you'll need a simple HTTP server. This is crucial for the Progressive Web App (PWA) features, especially the Service Worker, to function correctly.
+
+A quick and easy way to start a local server is using Python's built-in `http.server` module.
+
+**Steps to Run:**
+
+1.  **Ensure Python is Installed:** Make sure you have Python 3 installed on your system.
+2.  **Open Terminal/Command Prompt:** Navigate to the root directory of this project in your terminal or command prompt.
+3.  **Start the Server:** Execute the following command:
+    ```bash
+    python3 -m http.server 8000
+    ```
+    This will start a local web server on port 8000. You can use a different port if 8000 is already in use.
+4.  **Access in Browser:** Open your web browser and go to `http://localhost:8000`.
+
+You should now see the application running locally, with all PWA features (like offline caching) enabled for testing.
+
+---
+
 ## Deployment
 
 This project is a static web application, which makes it very easy to deploy on a variety of free hosting services.
