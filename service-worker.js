@@ -14,7 +14,8 @@ const URLS_TO_CACHE = [
     './game-select.js',
     './number-forge.js',
     './lava-balance.js',
-    './market-tycoon.js'
+    './market-tycoon.js',
+    './icon.png'
 ];
 
 // Install the service worker and cache the app shell
@@ -35,6 +36,11 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
     // We only want to handle GET requests.
     if (event.request.method !== 'GET') {
+        return;
+    }
+
+    // We only want to handle http and https requests.
+    if (!event.request.url.startsWith('http')) {
         return;
     }
 

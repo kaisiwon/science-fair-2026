@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const leaderboardOverlay = document.getElementById('leaderboard-overlay');
     const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
     const debtDisplay = document.getElementById('debt-display');
-    const muteBtn = document.getElementById('mute-btn');
     const logoutBtn = document.getElementById('logout-btn');
     
     // --- User Session ---
@@ -24,40 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!currentUserId) {
         window.location.href = 'index.html';
     }
-
-    // --- Background Music ---    
-    const audioManager = {
-        // NOTE: For this to work, you must create an 'audio' folder inside your project
-        // and move the mp3 file into it. Then, run a local web server.
-        bgMusic: new Audio('audio/1102538_Teminite---The-Deep.mp3'),
-        isMuted: true,
-        hasBeenUnlocked: false,
-        init: function() {
-            this.bgMusic.loop = true;
-            this.bgMusic.volume = 0.2;
-            muteBtn.textContent = this.isMuted ? '🔇' : '🔊';
-        },
-        toggleMute: function() {
-            this.isMuted = !this.isMuted;
-            this.bgMusic.muted = this.isMuted;
-            muteBtn.textContent = this.isMuted ? '🔇' : '🔊';
-
-            // On the first unmute, try to play the music. This is a robust way
-            // to handle browser autoplay policies, as it's a direct user action.
-            if (!this.isMuted && !this.hasBeenUnlocked) {
-                this.bgMusic.play().catch(e => console.error("Audio could not be started:", e));
-                this.hasBeenUnlocked = true;
-            }
-        },
-        // This function should be called on the first major user interaction.
-        unlock: function() {
-            if (!this.hasBeenUnlocked) {
-                this.bgMusic.play().catch(e => console.error("Audio could not be started:", e));
-                this.hasBeenUnlocked = true;
-            }
-        }
-    };
-    audioManager.init();
 
     // --- Resource Configuration ---
     const RESOURCES = {
@@ -71,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         day: 1,
         cash: 1000,
         debt: 0,
-        maxDebt: 5000,
+        maxDebt: 50000,
         inventory: {},
         prices: {},
         priceHistory: {}
@@ -305,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleLoan(action) {
-        const amount = 500;
+        const amount = 10000;
         if (action === 'borrow') {
             if (gameState.debt + amount <= gameState.maxDebt) {
                 gameState.debt += amount;
@@ -331,8 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
     nextDayBtn.addEventListener('click', () => {
-        // On the first click of the main game button, unlock the audio context.
-        audioManager.unlock();
         nextDay();
     });
 
@@ -366,7 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     leaderboardBtn.addEventListener('click', displayLeaderboard);
     closeLeaderboardBtn.addEventListener('click', () => leaderboardOverlay.classList.remove('active'));
-    muteBtn.addEventListener('click', () => audioManager.toggleMute());
     logoutBtn.addEventListener('click', () => {
         const netWorth = calculateNetWorth();
         saveHighScore(netWorth);
