@@ -1,6 +1,6 @@
 # Project: MathQuest PWA - A Science Fair Adventure
 
-Welcome to the MathQuest PWA project! This repository contains the source code and documentation for an educational game designed for a science fair. The goal is to create an application that makes learning math fun and interactive by embedding mathematical concepts directly into the core gameplay mechanics.
+Welcome to MathQuest! This is an educational website designed for a science fair, featuring a collection of fun, replayable math games. The goal is to make learning math interactive by embedding mathematical concepts directly into gameplay.
 
 This project is built as a **Progressive Web App (PWA)**, ensuring it is:
 *   **Instantly Accessible:** Launchable from a URL or QR code on any device with a web browser (Chromebooks, iPads, phones).
@@ -9,81 +9,47 @@ This project is built as a **Progressive Web App (PWA)**, ensuring it is:
 
 ---
 
-## Implemented Games
+## How to Use the Site
 
-Here are the games currently playable in the MathQuest PWA.
+### Creating an Account
+To save your high scores and track your progress, you'll need to create an account.
+1.  On the main page, click the "Sign Up" link.
+2.  Choose a username.
+3.  Create a password that meets the security requirements (you'll see the checklist as you type).
+4.  Confirm your password and click "Sign Up".
 
-### 1. Lava Balance (The Physics Challenge)
+### Logging In
+Once you have an account, you can log in to access your saved data and compete on the leaderboards.
+
+### Playing as a Guest
+If you just want to jump in and play, click the "Play as Guest" button. Your scores for the current session will be recorded, but they won't be saved permanently if you close your browser.
+
+---
+
+## How to Play the Games
+
+### 1. Number Forge (The Crafting Rogue-lite)
+*   **Math Focus:** Pre-Algebra, Order of Operations (PEMDAS/BODMAS).
+*   **Goal:** Use the number cards in your hand and the available operators to create a mathematical expression that equals the target number.
+*   **How to Play:**
+    *   Click on number cards and operator cards to build your equation in the display.
+    *   You must alternate between numbers and operators.
+    *   Use the "DEL" button to remove the last part of your expression.
+    *   When your equation is ready, hit "Submit". If you're correct, you'll score points and move to the next puzzle!
+
+### 2. Lava Balance (The Physics Challenge)
 *   **Math Focus:** Angles, Physics Simulation, and Reaction Time.
-*   **Gameplay:** A physics-based survival game where players must keep a bowl of lava balanced. The bowl tilts to random angles, and the player must input corrective angles to prevent the lava from spilling. The goal is to survive as long as possible, making it a game of constant, reactive adjustments.
+*   **Goal:** Survive as long as you can without spilling the lava!
+*   **How to Play:**
+    *   The bowl will start to tilt in a random direction.
+    *   In the input box, type an angle (in degrees) to rotate the bowl and counteract the tilt.
+    *   Press Enter or click "Correct" to apply your angle adjustment.
+    *   The longer you survive, the higher your score.
 
-### 2. Market Tycoon (The Simulation Game)
+### 3. Market Tycoon (The Simulation Game)
 *   **Math Focus:** Statistics, Probability, Percentages, and Graph Literacy.
-*   **Gameplay:** Players manage a business (like a space station or theme park) by analyzing real-time data streams, charts, and graphs. They must make quick decisions on buying, selling, and resource allocation based on calculating probabilities and interpreting trends to maximize their net worth.
-
----
-
-## Future Concepts
-
-### Number Forge (The Crafting Rogue-lite)
-*   **Math Focus:** Pre-Algebra, Order of Operations (PEMDAS/BODMAS), Factoring.
-*   **Gameplay:** Players are given a "Target Number" and a hand of resource numbers. They must use mathematical operators (+, -, ×, ÷) to combine their numbers and hit the target, defeating monsters or crafting items in a dungeon-crawl setting. Replayability comes from random numbers, procedural maps, and unlockable upgrades like exponents or brackets.
-
----
-
-## Tech Stack
-
-*   **Frontend:** HTML5, CSS3, JavaScript (ES6+)
-*   **PWA Features:** Service Workers for offline caching, Web App Manifest for installability.
-*   **State Management:** IndexedDB for persisting game state instantly (e.g., saving a "Number Forge" run).
-*   **Physics & Graphics:** HTML5 Canvas API with Matter.js for the 2D physics simulation in "Lava Balance".
-*   **Authentication:** Local user accounts are managed via IndexedDB with password hashing using the Web Crypto API.
-
-This `README.md` will serve as the front page for your project, helping anyone who discovers it understand its purpose and scope.
-
----
-
-## Running Locally
-
-To run this application locally in development mode, you'll need a simple HTTP server. This is crucial for the Progressive Web App (PWA) features, especially the Service Worker, to function correctly.
-
-A quick and easy way to start a local server is using Python's built-in `http.server` module.
-
-**Steps to Run:**
-
-1.  **Ensure Python is Installed:** Make sure you have Python 3 installed on your system.
-2.  **Open Terminal/Command Prompt:** Navigate to the root directory of this project in your terminal or command prompt.
-3.  **Start the Server:** Execute the following command:
-    ```bash
-    python3 -m http.server 8000
-    ```
-    This will start a local web server on port 8000. You can use a different port if 8000 is already in use.
-4.  **Access in Browser:** Open your web browser and go to `http://localhost:8000`.
-
-You should now see the application running locally, with all PWA features (like offline caching) enabled for testing.
-
----
-
-## Deployment
-
-This project is a static web application, which makes it very easy to deploy on a variety of free hosting services.
-
-### Recommended Service: GitHub Pages
-
-**GitHub Pages** is the simplest and most direct way to deploy this project, as the code is already hosted on GitHub.
-
-**Steps to Deploy:**
-
-1.  **Ensure `index.html` is in the Root:** Your main `index.html` file should be in the root directory of your repository.
-2.  **Navigate to Repository Settings:** In your GitHub repository, go to `Settings` > `Pages`.
-3.  **Select a Source:** Under the "Build and deployment" section, choose `Deploy from a branch`.
-4.  **Choose the Branch:** Select your main branch (e.g., `main` or `master`) from the dropdown and keep the folder as `/root`. Click `Save`.
-5.  **Wait for Deployment:** GitHub Actions will start a deployment process. After a minute or two, your site will be live at a URL like `https://<your-username>.github.io/science-fair-26/`. The URL will be displayed on the Pages settings screen.
-
-### Other Free Options
-
-If you need more advanced features in the future (like server-side logic), you could consider these platforms:
-
-*   **Netlify:** Offers a simple drag-and-drop interface or Git-based deployments. It's very fast and has a generous free tier.
-*   **Vercel:** Similar to Netlify, Vercel is another excellent platform for deploying static sites and serverless functions. It's known for its speed and great developer experience.
-*   **Cloudflare Pages:** A strong competitor focused on performance and security, also with a great free tier for static projects.
+*   **Goal:** Maximize your net worth by buying low and selling high.
+*   **How to Play:**
+    *   Use the "Buy" and "Sell" buttons to trade resources. Watch the price chart to spot trends.
+    *   Click "Next Day" to advance time. Prices will change, and random market events may occur.
+    *   You can borrow money if you need extra cash, but be careful! You have to pay interest, and going too far into debt can lead to bankruptcy.
