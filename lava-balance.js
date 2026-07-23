@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;
     let isGameOver = false;
     let targetAngle = 0;
-    const TILT_SPEED = 0.0025; // Radians per update. Faster for more challenge.
+    const TILT_SPEED = 0.0040; // Radians per update. Faster for more challenge.
 
     // --- IndexedDB Setup ---
     let db;
@@ -141,6 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let lavaParticles = [];
 
     function createLava() {
+        const fireColors = ['#FF4500', '#FF8C00', '#FFD700', '#e94560'];
         lavaParticles.forEach(p => World.remove(world, p));
         lavaParticles = [];
         for (let i = 0; i < 50; i++) {
@@ -152,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     restitution: 0.4,
                     friction: 0.01,
                     label: 'lava',
-                    render: { fillStyle: '#e94560' }
+                    render: { fillStyle: fireColors[Math.floor(Math.random() * fireColors.length)] }
                 }
             );
             lavaParticles.push(particle);
@@ -181,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Every 5 seconds, set a new target angle for the bowl to tilt towards.
         setInterval(() => {
             if (!isGameOver) {
-                const randomAngleDegrees = Math.random() * 90 - 45; // -45 to +45 degrees
+                const randomAngleDegrees = Math.random() * 120 - 60; // -60 to +60 degrees for more extreme tilts
                 targetAngle = randomAngleDegrees * (Math.PI / 180);
             }
         }, 2500); // Choose a new angle every 2.5 seconds instead of 5
@@ -239,6 +240,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const direction = Math.sign(targetAngle - bowl.angle);
             Body.rotate(bowl, direction * TILT_SPEED);
         }
+
+        // Add a flicker effect to the lava
+        const fireColors = ['#FF4500', '#FF8C00', '#FFD700', '#e94560'];
+        lavaParticles.forEach(particle => {
+            // Give each particle a small chance to change color each frame
+            if (Math.random() < 0.05) {
+                particle.render.fillStyle = fireColors[Math.floor(Math.random() * fireColors.length)];
+            }
+        });
     });
 
     playAgainBtn.addEventListener('click', startGame);

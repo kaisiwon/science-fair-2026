@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openDB() {
         return new Promise((resolve, reject) => {
-            // Use version 3 to add the new 'users' store
-            const request = indexedDB.open(DB_NAME, 3);
+            // Use the latest version (4) to match other game files.
+            const request = indexedDB.open(DB_NAME, 4);
 
             request.onupgradeneeded = event => {
                 const db = event.target.result;
