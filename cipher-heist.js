@@ -12,11 +12,56 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSolution = 0;
     let timerInterval;
 
+    function generateRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
     function generateEquation() {
-        const a = Math.floor(Math.random() * 10) + 1;
-        const b = Math.floor(Math.random() * 10) + a; // Ensure b is always greater than a for positive solutions
-        currentSolution = b - a;
-        equationDisplay.textContent = `x + ${a} = ${b}`;
+        let equation = '';
+        let solution = 0;
+        const type = generateRandomNumber(0, 5); // 6 types of equations for now
+
+        switch (type) {
+            case 0: // x + a = b
+                const a0 = generateRandomNumber(1, 15);
+                solution = generateRandomNumber(1, 20);
+                const b0 = solution + a0;
+                equation = `x + ${a0} = ${b0}`;
+                break;
+            case 1: // x - a = b
+                const a1 = generateRandomNumber(1, 15);
+                solution = generateRandomNumber(5, 25);
+                const b1 = solution - a1;
+                equation = `x - ${a1} = ${b1}`;
+                break;
+            case 2: // a - x = b
+                const a2 = generateRandomNumber(10, 30);
+                solution = generateRandomNumber(1, 15);
+                const b2 = a2 - solution;
+                equation = `${a2} - x = ${b2}`;
+                break;
+            case 3: // x * a = b
+                const a3 = generateRandomNumber(2, 10);
+                solution = generateRandomNumber(1, 12);
+                const b3 = solution * a3;
+                equation = `x * ${a3} = ${b3}`;
+                break;
+            case 4: // x / a = b
+                const a4 = generateRandomNumber(2, 10);
+                solution = generateRandomNumber(1, 12);
+                const b4 = solution / a4;
+                equation = `x / ${a4} = ${b4}`;
+                break;
+            case 5: // a * x + b = c (multi-step)
+                const a5 = generateRandomNumber(2, 5);
+                const b5 = generateRandomNumber(1, 10);
+                solution = generateRandomNumber(2, 8);
+                const c5 = (a5 * solution) + b5;
+                equation = `${a5} * x + ${b5} = ${c5}`;
+                break;
+        }
+        currentSolution = solution;
+        equationDisplay.textContent = equation;
     }
 
     function checkAnswer() {

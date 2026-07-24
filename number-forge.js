@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return new Promise((resolve, reject) => {
             // This is the single source of truth for the DB schema.
             // Any new stores or indexes should be added here.
-            const request = indexedDB.open(DB_NAME, 4); // Incremented version
+            const request = indexedDB.open(DB_NAME, 5); // Incremented version
 
             request.onupgradeneeded = event => {
                 const db = event.target.result;
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!db || newScore <= 0) return;
         const transaction = db.transaction([HIGH_SCORES_STORE], 'readwrite');
         const store = transaction.objectStore(HIGH_SCORES_STORE);
-        store.add({ score: newScore, date: new Date(), userId: currentUserId });
+        store.add({ score: newScore, date: new Date(), userId: currentUserId, game: 'Number Forge' });
     }
 
     function displayLeaderboard() {
