@@ -14,11 +14,29 @@
 <body>
     <div class="game-container">
         <header class="game-header">
+            <div class="header-top-row">
+                <div class="stats-display">
+                    <span>Score: <span id="score-display">0</span></span>
+                </div>
+                <div class="timer-display">
+                    <span id="time-display">60</span>
+                </div>
+                <button id="logout-btn" class="icon-btn">🚪</button>
+            </div>
             <h1>Cipher Heist</h1>
         </header>
+
         <main class="game-board">
-            <p>Welcome to Cipher Heist. Game implementation coming soon!</p>
-            <a href="game-select.html">Back to Game Select</a>
+            <div class="puzzle-section">
+                <h2>Crack the Code</h2>
+                <div class="equation-display" id="equation-display">x + 5 = 10</div>
+            </div>
+
+            <div class="input-section">
+                <input type="text" id="answer-input" placeholder="Enter the value of x">
+                <button id="submit-btn" class="control-btn primary">Submit</button>
+            </div>
+             <a href="game-select.html">Back to Game Select</a>
         </main>
     </div>
     <script src="cipher-heist.js"></script>

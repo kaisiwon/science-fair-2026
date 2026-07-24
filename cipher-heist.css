@@ -1,0 +1,154 @@
+:root {
+    --bg-color: #1a1a2e;
+    --primary-color: #16213e;
+    --secondary-color: #0f3460;
+    --accent-color: #e94560;
+    --font-color: #dcdcdc;
+    --font-family-display: 'Orbitron', sans-serif;
+    --font-family-body: 'Roboto', sans-serif;
+    --card-bg: #2a2a4a;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family-body);
+    background-color: var(--bg-color);
+    color: var(--font-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+a, a:visited {
+    color: var(--accent-color);
+    text-decoration: none;
+    margin-top: 1rem;
+    display: inline-block;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--primary-color);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-header {
+    background-color: var(--secondary-color);
+    padding: 0.75rem 1rem 1rem 1rem;
+    text-align: center;
+}
+
+.header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.stats-display {
+    font-size: 1rem;
+    color: var(--font-color);
+    opacity: 0.9;
+}
+
+.timer-display {
+    font-family: var(--font-family-display);
+    font-size: 1.5rem;
+    color: var(--accent-color);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    cursor: pointer;
+    color: var(--font-color);
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.game-header h1 {
+    font-family: var(--font-family-display);
+    font-size: 1.75rem;
+    color: var(--accent-color);
+    text-shadow: 0 0 5px var(--accent-color);
+}
+
+.game-board {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.puzzle-section h2 {
+    font-family: var(--font-family-body);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: var(--font-color);
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+}
+
+.equation-display {
+    font-family: var(--font-family-display);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #fff;
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 2px solid var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.input-section {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#answer-input {
+    flex-grow: 1;
+    background-color: var(--bg-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    color: var(--font-color);
+}
+
+.control-btn {
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    background-color: var(--card-bg);
+    color: var(--font-color);
+}
+
+.control-btn.primary {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.control-btn:hover {
+    filter: brightness(1.2);
+}
