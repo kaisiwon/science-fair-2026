@@ -1,13 +1,15 @@
-const CACHE_NAME = 'mathquest-v2'; // Updated cache name
+const CACHE_NAME = 'mathquest-v3'; // Updated cache name
 const URLS_TO_CACHE = [
     './index.html',
     './game-select.html',
     './number-forge.html',
     './lava-balance.html',
     './market-tycoon.html',
+    './cipher-heist.html',
     './number-forge.css',
     './lava-balance.css',
     './market-tycoon.css',
+    './cipher-heist.css',
     './login.css',
     './game-select.css',
     './login.js',
@@ -15,6 +17,7 @@ const URLS_TO_CACHE = [
     './number-forge.js',
     './lava-balance.js',
     './market-tycoon.js',
+    './cipher-heist.js',
     './icon.png',
     './manifest.json'
 ];
