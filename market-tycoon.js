@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         day: 1,
         cash: 1000,
         debt: 0,
-        maxDebt: 50000,
+        maxDebt: 10000,
         inventory: {},
         prices: {},
         priceHistory: {}
@@ -124,6 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
             description: "A rare vein of Technetium has been discovered. Prices are temporarily lower.",
             resource: 'technetium',
             effect: (price) => Math.round(price * 0.5)
+        },
+        {
+            title: "Drought",
+            description: "Water is running low after a drought. Water prices are temporarily higher.",
+            resource: 'water',
+            effect: (price) => Math.round(price * (1.8 + Math.random() * 0.7)) // +80% to +150%
         }
     ];
 
@@ -199,14 +205,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const volatility = RESOURCES[key].volatility;
             // Use a geometric random walk for more stable long-term prices.
             // A positive drift creates a slow, general inflation over time.
-            const drift = 0.01; // Represents a 1% daily upward drift
+            const drift = 0.02; // Represents a 2% daily upward drift
             // Bias the random shock to be slightly more positive than negative.
-            const randomShock = (Math.random() - 0.48) * volatility;
+            const randomShock = (Math.random() - 0.45) * volatility;
             gameState.prices[key] = Math.max(5, Math.round(gameState.prices[key] * Math.exp(drift + randomShock)));
         }
 
-        // 30% chance of a special event
-        if (Math.random() < 0.3) {
+        // 40% chance of a special event
+        if (Math.random() < 0.4) {
             const randomEvent = events[Math.floor(Math.random() * events.length)];
             eventTitle.textContent = randomEvent.title;
             eventDescription.textContent = randomEvent.description;
@@ -270,23 +276,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleLoan(action) {
-        const amount = 10000;
+        const borrowAmount = 500; // User can borrow $500 at a time
+        const repayAmount = 1000; // Repay $1000 at a time (can be adjusted if needed)
         if (action === 'borrow') {
-            if (gameState.debt + amount <= gameState.maxDebt) {
-                gameState.debt += amount;
-                gameState.cash += amount;
+            if (gameState.debt + borrowAmount <= gameState.maxDebt) {
+                gameState.debt += borrowAmount;
+                gameState.cash += borrowAmount;
             } else {
                 alert(`Cannot exceed the maximum debt limit of $${gameState.maxDebt}.`);
             }
         } else if (action === 'repay') {
-            const repayAmount = Math.min(amount, gameState.debt);
-            if (repayAmount <= 0) {
+            const actualRepayAmount = Math.min(repayAmount, gameState.debt);
+            if (actualRepayAmount <= 0) {
                 alert("You have no debt to repay.");
                 return;
             }
-            if (gameState.cash >= repayAmount) {
-                gameState.debt -= repayAmount;
-                gameState.cash -= repayAmount;
+            if (gameState.cash >= actualRepayAmount) {
+                gameState.debt -= actualRepayAmount;
+                gameState.cash -= actualRepayAmount;
             } else {
                 alert("Not enough cash to make a repayment.");
             }
