@@ -116,39 +116,6 @@ body {
 
 .tutorial-panel p { margin: 1rem 0 2rem 0; line-height: 1.5; }
 
-.settings-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(26, 26, 46, 0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    z-index: 200;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.settings-overlay.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: all;
-}
-
-.settings-panel {
-    background: var(--primary-color);
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    text-align: center;
-    width: 90%;
-    max-width: 320px;
-}
-
 .level-up-overlay {
     position: absolute;
     top: 0;
@@ -426,21 +393,6 @@ body {
 .control-btn.danger {
     background-color: #c0392b; /* A distinct red for warning */
     color: #fff;
-}
-
-.setting-item {
-    margin-bottom: 2rem;
-}
-
-.setting-item label {
-    display: block;
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-}
-
-input[type="range"] {
-    width: 100%;
-    cursor: pointer;
 }
 
 .control-btn:hover {

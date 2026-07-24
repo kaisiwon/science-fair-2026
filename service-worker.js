@@ -15,7 +15,8 @@ const URLS_TO_CACHE = [
     './number-forge.js',
     './lava-balance.js',
     './market-tycoon.js',
-    './icon.png'
+    './icon.png',
+    './manifest.json'
 ];
 
 // Install the service worker and cache the app shell

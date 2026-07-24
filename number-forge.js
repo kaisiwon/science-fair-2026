@@ -16,12 +16,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const leaderboardOverlay = document.getElementById('leaderboard-overlay');
     const logoutBtn = document.getElementById('logout-btn');
     const shareScoreBtn = document.getElementById('share-score-btn');
-    const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
-    const muteBtn = document.getElementById('mute-btn');
-    const settingsBtn = document.getElementById('settings-btn');
-    const settingsOverlay = document.getElementById('settings-overlay');
-    const closeSettingsBtn = document.getElementById('close-settings-btn');
-    const volumeSlider = document.getElementById('volume-slider');
     const levelDisplay = document.getElementById('level-display');
     const levelUpOverlay = document.getElementById('level-up-overlay');
     const timeDisplay = document.getElementById('time-display');
@@ -35,8 +29,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let level = 1;
     const POINTS_PER_SUCCESS = 25;
     let scoreToNextLevel = 100;
-    let volume = 1;
-    let volumeBeforeMute = 1;
     let solutionForHint = '';
     let hintClickCount = 0;
     const HINT_COST = 5;
@@ -99,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!db) return;
         const transaction = db.transaction([GAME_STATE_STORE], 'readwrite');
         const objectStore = transaction.objectStore(GAME_STATE_STORE);
-        const gameState = { id: currentUserId, score, level, scoreToNextLevel, volume, volumeBeforeMute, hasPlayedBefore };
+        const gameState = { id: currentUserId, score, level, scoreToNextLevel, hasPlayedBefore };
         objectStore.put(gameState);
     }
 
@@ -117,8 +109,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     score = savedState.score || 0;
                     level = savedState.level || 1;
                     scoreToNextLevel = savedState.scoreToNextLevel || 100;
-                    volume = typeof savedState.volume === 'number' ? savedState.volume : 1;
-                    volumeBeforeMute = savedState.volumeBeforeMute || 1;
                     hasPlayedBefore = savedState.hasPlayedBefore || false;
                 }
                 resolve();
@@ -205,28 +195,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- Audio Setup ---
-    const SOUNDS = {
-        click: './audio/click.mp3',
-        success: './audio/success.mp3',
-        levelUp: './audio/levelup.mp3',
-        error: './audio/error.mp3',
-        delete: './audio/delete.mp3'
-    };
-
-    /**
-     * Plays a sound from the SOUNDS object.
-     * @param {string} soundKey The key of the sound to play.
-     */
-    function playSound(soundKey) {
-        if (SOUNDS[soundKey]) {
-            const audio = new Audio(SOUNDS[soundKey]);
-            audio.volume = volume;
-            // We don't need to wait for the sound to finish, so we don't await the promise.
-            audio.play().catch(error => console.error(`Could not play sound: ${soundKey}`, error));
-        }
-    }
-
     // --- Functions ---
 
     /**
@@ -242,38 +210,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateStatsDisplay() {
         levelDisplay.textContent = level;
         scoreDisplay.textContent = score;
-        updateVolumeUI();
         // You could also add a progress bar to the next level here
         // e.g., progressBar.style.width = `${(score / scoreToNextLevel) * 100}%`;
-    }
-
-    /**
-     * Updates all volume-related UI elements (slider and mute button icon).
-     */
-    function updateVolumeUI() {
-        volumeSlider.value = volume;
-        muteBtn.textContent = volume > 0 ? '🔊' : '🔇';
-    }
-
-    /**
-     * Toggles the sound between muted and the previous volume level.
-     */
-    function toggleMute() {
-        if (volume > 0) {
-            volumeBeforeMute = volume;
-            volume = 0;
-        } else {
-            volume = volumeBeforeMute > 0 ? volumeBeforeMute : 1;
-        }
-        updateVolumeUI();
-        saveGameState();
     }
 
     /**
      * Logs the user out, saving their score and clearing the session.
      */
     function handleLogout() {
-        playSound('click');
         saveHighScore(score); // Save the score from the current run
         sessionStorage.removeItem('currentUserId');
         window.location.href = 'index.html';
@@ -311,7 +255,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const cardElement = event.target;
         
         if (lastInputType === 'operator' || lastInputType === null) {
-            playSound('click');
             const value = cardElement.dataset.value;
             expression.push({ type: 'number', value, element: cardElement });
             lastInputType = 'number';
@@ -332,7 +275,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (value === '(') {
             // Allow open bracket if the expression is empty or after an operator
             if (lastInputType === null || lastInputType === 'operator') {
-                playSound('click');
                 expression.push({ type: 'operator', value });
                 openBrackets++;
                 lastInputType = 'operator'; // Treat '(' as an operator for validation
@@ -343,7 +285,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (value === ')') {
             // Allow close bracket only if there's an open one and after a number
             if (openBrackets > 0 && lastInputType === 'number') {
-                playSound('click');
                 expression.push({ type: 'operator', value });
                 openBrackets--;
                 lastInputType = 'number'; // Treat ')' as a number for validation
@@ -354,7 +295,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             // Handle standard operators (+, -, *, /)
             if (lastInputType === 'number') {
-            playSound('click');
             expression.push({ type: 'operator', value });
             lastInputType = 'operator';
             updateDisplay();
@@ -377,7 +317,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         score = Math.max(0, score - HINT_COST);
         updateStatsDisplay();
         saveGameState();
-        playSound('click');
 
         hintClickCount++;
         const hintParts = solutionForHint.split(' ');
@@ -406,8 +345,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (expression.length === 0) {
             return; // Nothing to delete
         }
-
-        playSound('delete');
 
         const lastEntry = expression.pop();
 
@@ -440,7 +377,6 @@ document.addEventListener('DOMContentLoaded', async () => {
      * @param {HTMLElement} element The element to animate.
      */
     function triggerShake(element) {
-        playSound('error');
         element.classList.add('shake');
         element.addEventListener('animationend', () => {
             element.classList.remove('shake');
@@ -451,7 +387,6 @@ document.addEventListener('DOMContentLoaded', async () => {
      * Clears the expression and resets the game state.
      */
     function clearExpression() {
-        playSound('click');
         expression = [];
         lastInputType = null;
         openBrackets = 0;
@@ -467,7 +402,6 @@ document.addEventListener('DOMContentLoaded', async () => {
      * Triggers the "Level Up!" animation.
      */
     function triggerLevelUpAnimation() {
-        playSound('levelUp');
         levelUpOverlay.classList.add('active');
         // The listener removes itself after running once to prevent memory leaks
         levelUpOverlay.addEventListener('animationend', () => {
@@ -480,7 +414,6 @@ document.addEventListener('DOMContentLoaded', async () => {
      * Resets all game progress back to the initial state.
      */
     function resetGame() {
-        playSound('click');
         saveHighScore(score); // Save the score from the completed run
         const isConfirmed = confirm('Are you sure you want to start a new game? Your score and level will be permanently reset.');
 
@@ -521,7 +454,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (result === targetNumber) {
                 stopTimer(); // Stop the timer on success
-                playSound('success');
                 // --- Success Logic ---
                 const timeBonus = Math.max(0, timeLeft);
                 score += POINTS_PER_SUCCESS + timeBonus;
@@ -582,9 +514,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     newGameBtn.addEventListener('click', resetGame);
     submitBtn.addEventListener('click', handleSubmit);
     logoutBtn.addEventListener('click', handleLogout);
-    leaderboardBtn.addEventListener('click', displayLeaderboard);
     shareScoreBtn.addEventListener('click', handleShare);
-    closeLeaderboardBtn.addEventListener('click', () => leaderboardOverlay.classList.remove('active'));
     helpBtn.addEventListener('click', startTutorial);
     tutorialOverlay.querySelector('.tutorial-next').addEventListener('click', () => {
         currentTutorialStep++;
@@ -592,16 +522,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     tutorialOverlay.querySelector('.tutorial-finish').addEventListener('click', endTutorial);
     hintBtn.addEventListener('click', handleHint);
-    muteBtn.addEventListener('click', toggleMute);
-    settingsBtn.addEventListener('click', () => settingsOverlay.classList.add('active'));
-    closeSettingsBtn.addEventListener('click', () => settingsOverlay.classList.remove('active'));
-    volumeSlider.addEventListener('input', (e) => {
-        volume = e.target.value;
-        // If user is sliding volume up from 0, consider it an unmute action
-        if (volume > 0) volumeBeforeMute = volume;
-        updateVolumeUI();
-        saveGameState();
-    });
 
     /**
      * Generates a new puzzle by setting a random target and random number cards.
