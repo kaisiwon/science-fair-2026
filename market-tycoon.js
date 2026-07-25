@@ -114,6 +114,18 @@ document.addEventListener('DOMContentLoaded', () => {
             effect: (price) => Math.round(price * (1.5 + Math.random() * 0.5)) // +50% to +100%
         },
         {
+            title: "Technetium Scarcity",
+            description: "A major Technetium mine has been depleted. Prices are expected to rise sharply.",
+            resource: 'technetium',
+            effect: (price) => Math.round(price * (1.6 + Math.random() * 0.7)) // +60% to +130%
+        },
+        {
+            title: "Water Quality Report",
+            description: "A new report highlights issues with local water quality, causing a temporary dip in demand.",
+            resource: 'water',
+            effect: (price) => Math.round(price * (0.3 + Math.random() * 0.4)) // -70% to -60%
+        },
+        {
             title: "Market Crash",
             description: "A large asteroid mine floods the market with cheap goods. All prices plummet!",
             resource: 'all',
@@ -205,9 +217,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const volatility = RESOURCES[key].volatility;
             // Use a geometric random walk for more stable long-term prices.
             // A positive drift creates a slow, general inflation over time.
-            const drift = 0.02; // Represents a 2% daily upward drift
+            const drift = 0.03; // Represents a 3% daily upward drift
             // Bias the random shock to be slightly more positive than negative.
-            const randomShock = (Math.random() - 0.45) * volatility;
+            const randomShock = (Math.random() - 0.40) * volatility;
             gameState.prices[key] = Math.max(5, Math.round(gameState.prices[key] * Math.exp(drift + randomShock)));
         }
 
