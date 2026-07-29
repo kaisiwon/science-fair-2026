@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mathquest-v3'; // Updated cache name
+const CACHE_NAME = 'mathquest-v4'; // Updated cache name
 const URLS_TO_CACHE = [
     './index.html',
     './game-select.html',
@@ -6,10 +6,18 @@ const URLS_TO_CACHE = [
     './lava-balance.html',
     './market-tycoon.html',
     './cipher-heist.html',
+    './balance-island.html',
+    './merge-matrix.html',
+    './number-nomad.html',
+    './pizza-fraction-parlour.html',
     './number-forge.css',
     './lava-balance.css',
     './market-tycoon.css',
     './cipher-heist.css',
+    './balance-island.css',
+    './merge-matrix.css',
+    './number-nomad.css',
+    './pizza-fraction-parlour.css',
     './login.css',
     './game-select.css',
     './login.js',
@@ -18,6 +26,10 @@ const URLS_TO_CACHE = [
     './lava-balance.js',
     './market-tycoon.js',
     './cipher-heist.js',
+    './balance-island.js',
+    './merge-matrix.js',
+    './number-nomad.js',
+    './pizza-fraction-parlour.js',
     './icon.png',
     './manifest.json'
 ];
