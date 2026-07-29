@@ -63,3 +63,48 @@ Below are the high-level epics for building out this project. Each epic will be 
     *   As a player, I want the game to present me with random event cards that describe a market change (e.g., "+20% value for item X").
     *   As a player, I want to have "Buy" and "Sell" buttons for different resources.
     *   As a player, I want to see my net worth update in real-time based on my decisions.
+
+---
+
+### **Epic 5: Core Gameplay - Math Dash**
+*   **Goal:** Build the main gameplay loop for the Math Dash concept.
+*   **Stories:**
+    *   As a player, I want to control a character that automatically runs forward.
+    *   As a player, I want to jump over obstacles by clicking or pressing a key.
+    *   As a player, I want the game to have a clear start and end point.
+
+---
+
+### **Epic 6: Core Gameplay - Pizza Fraction Parlour**
+*   **Goal:** Build the main gameplay loop for the Pizza Fraction Parlour concept.
+*   **Stories:**
+    *   As a player, I want to see customer orders for pizzas with different fractions.
+    *   As a player, I want to drag and drop pizza slices to fulfill orders.
+    *   As a player, I want to be scored based on my accuracy and speed.
+
+---
+
+### **Epic 7: Core Gameplay - Number Nomad**
+*   **Goal:** Build the main gameplay loop for the Number Nomad concept.
+*   **Stories:**
+    *   As a player, I want to control a character in an infinite runner game.
+    *   As a player, I want to interact with numbers on the path to reach a target number.
+    *   As a player, I want to collect power-ups that affect the gameplay.
+
+---
+
+### **Epic 8: Core Gameplay - Merge Matrix**
+*   **Goal:** Build the main gameplay loop for the Merge Matrix concept.
+*   **Stories:**
+    *   As a player, I want to be able to slide tiles on a grid.
+    *   As a player, I want tiles with identical numbers to merge.
+    *   As a player, I want to use special operator tiles to modify the grid.
+
+---
+
+### **Epic 9: Core Gameplay - Balance Island**
+*   **Goal:** Build the main gameplay loop for the Balance Island concept.
+*   **Stories:**
+    *   As a player, I want to place animals with different weights on a seesaw.
+    *   As a player, I want to solve puzzles by balancing the seesaw.
+    *   As a player, I want to see visual feedback on the balance of the seesaw.

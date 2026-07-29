@@ -311,7 +311,7 @@
         bgMusic.loop = true;
         let currentMenuMusicUrl = "";
         let fadeInterval = null;
-        let crashSound;
+        // let crashSound;
         let skinBgImage = new Image();
         skinBgImage.src = "./assets/pixel_dungeon_with_giant_robot.png";
         
@@ -386,7 +386,7 @@
             currentMenuMusicUrl = ""; // Reset menu music state
             if (fadeInterval) clearInterval(fadeInterval);
             bgMusic.volume = 1;
-            bgMusic.pause();
+            // bgMusic.pause();
             bgMusic.removeAttribute('src'); // No audio for levels
 
             for (let row = 0; row < layout.length; row++) {
@@ -503,7 +503,7 @@
             checkSkinUnlocks('editor', null);
             gameState = "EDITOR";
             editorCameraX = 0;
-            bgMusic.pause();
+            // bgMusic.pause();
             if (existingLayout) {
                 editorLayout = Array.from({length: 10}, (_, r) => {
                     let rowStr = existingLayout[r] || "";
@@ -585,15 +585,15 @@
             if (gameState === "DEAD") return;
             gameState = "DEAD";
             attempts++;
-            bgMusic.pause();
+            // bgMusic.pause();
             if (!isPracticeMode || checkpoints.length === 0) {
                 bgMusic.currentTime = 0;
             }
             
-            if (crashSound) {
+            /* if (crashSound) {
                 crashSound.currentTime = 0;
                 crashSound.play().catch(e => console.log("Crash sound play failed", e));
-            }
+            } */
             
             // Automatic respawn after 0.8 seconds
             setTimeout(() => {
@@ -623,7 +623,7 @@
         function playMenuMusic(musicUrl) {
             // Remove all audio references
             if (!bgMusic.paused) {
-                bgMusic.pause();
+                // bgMusic.pause();
             }
             bgMusic.removeAttribute('src');
             currentMenuMusicUrl = ""; // Reset menu music state
@@ -707,10 +707,10 @@
             if (e.code === "Escape" || e.code === "KeyP") {
                 if (gameState === "PLAYING") {
                     gameState = "PAUSED";
-                    bgMusic.pause();
+                    // bgMusic.pause();
                 } else if (gameState === "PAUSED") {
                     gameState = "PLAYING";
-                    bgMusic.play().catch(e => console.log("Audio play failed", e));
+                    // bgMusic.play().catch(e => console.log("Audio play failed", e));
                 }
             } else if (e.code === "Space") { 
                 if (gameState === "START") {
@@ -1031,13 +1031,13 @@
                 if (mouseX >= startX && mouseX <= startX + btnWidth) {
                     if (mouseY >= 150 && mouseY <= 150 + btnHeight) {
                         gameState = "PLAYING";
-                        bgMusic.play().catch(e => {});
+                        // bgMusic.play().catch(e => {});
                     } else if (mouseY >= 210 && mouseY <= 210 + btnHeight) {
                         isPracticeMode = !isPracticeMode;
                         checkpoints = [];
-                        bgMusic.pause();
+                        // bgMusic.pause();
                         if (isPracticeMode) {
-                            bgMusic.src = "./assets/535331_stay-inside-me.mp3";
+                            // bgMusic.src = "./assets/535331_stay-inside-me.mp3";
                         } else {
                             const lvlUrl = levelCategories[currentCategoryIndex].levels[currentLevelIndex].audioUrl;
                             if (lvlUrl) bgMusic.src = lvlUrl;
@@ -1048,7 +1048,7 @@
                         const setTimeAndPlay = () => {
                             bgMusic.currentTime = targetTime;
                             gameState = "PLAYING";
-                            bgMusic.play().catch(e => {});
+                            // bgMusic.play().catch(e => {});
                         };
                         if (bgMusic.readyState >= 1) {
                             setTimeAndPlay();
@@ -1070,7 +1070,7 @@
             } else if (gameState === "PLAYING") {
                 if (mouseX >= canvas.width - 45 && mouseX <= canvas.width - 15 && mouseY >= 15 && mouseY <= 45) {
                     gameState = "PAUSED";
-                    bgMusic.pause();
+                    // bgMusic.pause();
                     return;
                 }
                 isHolding = true; 
@@ -1365,7 +1365,7 @@
             // Check Level End
             if (player.x > levelEnd) {
                 gameState = "COMPLETE";
-                bgMusic.pause();
+                // bgMusic.pause();
             }
             
             // Screen Bounds (Floor & Ceiling)

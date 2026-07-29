@@ -53,3 +53,40 @@ If you just want to jump in and play, click the "Play as Guest" button. Your sco
     *   Use the "Buy" and "Sell" buttons to trade resources. Watch the price chart to spot trends.
     *   Click "Next Day" to advance time. Prices will change, and random market events may occur.
     *   You can borrow money if you need extra cash, but be careful! You have to pay interest, and going too far into debt can lead to bankruptcy.
+### 4. Math Dash (The Rhythm Runner)
+*   **Math Focus:** Rhythm, Timing, and Pattern Recognition.
+*   **Goal:** Jump over obstacles and reach the end of the level.
+*   **How to Play:**
+    *   Press Space or Click to jump.
+    *   Dodge the spikes and jump on the blocks.
+
+### 5. Pizza Fraction Parlour (Visual Sorting)
+*   **Math Focus:** Fractions (halves, quarters, eighths, thirds).
+*   **Goal:** Fulfill customer orders for pizza slices in fractions.
+*   **How to Play:**
+    *   Drag and drop pre-cut slices onto the pizza tray to match the order.
+    *   Score multipliers are awarded for fulfilling orders quickly without wasting ingredients.
+
+### 6. Number Nomad (Infinite Runner)
+*   **Math Focus:** Factors, Multiples, and Basic Arithmetic.
+*   **Goal:** Hit the target number by running over the correct sequence of numbers and operators.
+*   **How to Play:**
+    *   Your character runs forward automatically.
+    *   Jump onto platforms containing factors or multiples that help hit the target.
+    *   Collect positive numbers to grow bigger and negative numbers to shrink down.
+
+### 7. Merge Matrix (2048-Style Puzzle)
+*   **Math Focus:** Addition, Multiplication, and Strategic Planning.
+*   **Goal:** Achieve specific target numbers to synthesize new elements and clear the board.
+*   **How to Play:**
+    *   Swipe to slide numbered tiles across a grid.
+    *   Identical numbers merge together to add up (e.g., 2 merges with 2 to become 4).
+    *   Special "Operator" tiles (like +1 or ×2) modify rows they pass through.
+
+### 8. Balance Island (Physics Weight Puzzle)
+*   **Math Focus:** Equalities, Mass, and Weight.
+*   **Goal:** Place different animals on a seesaw to balance it perfectly.
+*   **How to Play:**
+    *   Animals have simple, clear weight values.
+    *   Balance a heavy elephant on one side using multiple smaller penguins on the other.
+    *   Solve puzzles by keeping the scale perfectly level before the timer runs out.
