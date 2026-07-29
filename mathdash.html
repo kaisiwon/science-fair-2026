@@ -73,12 +73,12 @@
 
             {
                 name: "Play",
-
+                menuMusic: "./assets/584131_geometry-dash-menu-theme.mp3",
                 levels: [
                     {
                         name: "Geometry Dash - Demo",
                         song: "Back on Dash - DJVI",
-
+                        audioUrl: "./assets/1137996_best-drop-of-all-time.mp3",
                         bgColor: "#2878ff",
                         blockColor: "#003399",
                         layout: [
@@ -97,7 +97,7 @@
                     {
                         name: "1. Stereo Madness",
                         song: "Stereo Madness",
-
+                        audioUrl: "https://music.apple.com/au/album/stereo-madness-geometry-dash/1276451229?i=1276451230",
                         bgColor: "#2878ff",
                         blockColor: "#003399",
                         layout: [
@@ -116,7 +116,7 @@
                     {
                         name: "1. Stereo Madness - Full Version",
                         song: "Stereo Madness",
-
+                        audioUrl: "https://music.apple.com/au/album/stereo-madness-geometry-dash/1276451229?i=1276451230",
                         bgColor: "#2878ff",
                         blockColor: "#003399",
                         layout: [
@@ -135,7 +135,7 @@
                     {
                         name: "2. Back on Track",
                         song: "Back on Track - Cut Version",
-
+                        audioUrl: "https://music.apple.com/au/album/back-on-track/695744161?i=695745058",
                         bgColor: "#a328ff",
                         blockColor: "#550099",
                         layout: [
@@ -154,7 +154,7 @@
                     {
                         name: "2. Back on Track - Full Version",
                         song: "Back on Track",
-
+                        audioUrl: "https://music.apple.com/au/album/back-on-track/695744161?i=695745058",
                         bgColor: "#a328ff",
                         blockColor: "#550099",
                         layout: [
@@ -173,7 +173,7 @@
                     {
                         name: "3. Polargeist",
                         song: "Polargeist - Cut Version",
-
+                        audioUrl: "./assets/polargeist_cut.mp3",
                         bgColor: "#28ff8c",
                         blockColor: "#00994d",
                         layout: [
@@ -192,7 +192,7 @@
                     {
                         name: "3.1. Polargeist - Full Version",
                         song: "Polargeist - Full Version",
-
+                        audioUrl: "./assets/523561_polargeist.mp3",
                         bgColor: "#28ff8c",
                         blockColor: "#00994d",
                         layout: [
@@ -225,6 +225,7 @@
         let hoveredShopIndex = -1;
         let skinPage = 0;
         let shopPage = 0;
+        let shopVideoVisible = false;
         let shopVideoTimeout = null;
         let totalOrbs = parseInt(localStorage.getItem("gd_orbs")) || 0;
         const skins = [
@@ -311,11 +312,14 @@
         bgMusic.loop = true;
         let currentMenuMusicUrl = "";
         let fadeInterval = null;
-        // let crashSound;
+        let crashSound = new Audio("./assets/make_a_crashing_sound_effect,_like_a_geometry_dash_character_has_crashed.mp3");
         let skinBgImage = new Image();
         skinBgImage.src = "./assets/pixel_dungeon_with_giant_robot.png";
         
-
+        let shopBgVideo = document.createElement("video");
+        // shopBgVideo.src = "./assets/cleanshot_2026-04-17_at_19.18.38.mp4"; // Temporarily removed due to file size
+        shopBgVideo.loop = true;
+        shopBgVideo.muted = true;
         
         let shipImages = [];
         const validShipNumbers = [
@@ -329,9 +333,8 @@
         const startBtn = document.getElementById('start-btn');
 
         let assetsLoaded = 0;
-        let totalAssets = validShipNumbers.length + 1; // +1 skinBgImage
-        // 2. No Preload Essential Audio (Crash Sound) - Handled dynamically
-        // 3. Start Game Event
+        let totalAssets = validShipNumbers.length + 2; // +1 skinBgImage, +1 crashSound
+
         function updateProgress() {
             assetsLoaded++;
             const percent = (assetsLoaded / totalAssets) * 100;
@@ -355,6 +358,19 @@
             shipImages.push(img);
         });
 
+        // 2. Preload Essential Audio (Crash Sound)
+        crashSound.addEventListener('canplaythrough', updateProgress, { once: true });
+        // Fallback just in case the audio event doesn't fire fast enough
+        setTimeout(() => { if (assetsLoaded < totalAssets) { assetsLoaded = totalAssets - 1; updateProgress(); } }, 5000); 
+
+        // 3. Start Game Event
+        startBtn.addEventListener('click', () => {
+            preloader.style.opacity = '0';
+            setTimeout(() => { preloader.style.display = 'none'; }, 500);
+            
+            // Kick off game music/menu state
+            returnToMenu();
+        });
 
         function checkSkinUnlocks(event, data) {
             let newlyUnlocked = [];
@@ -386,8 +402,14 @@
             currentMenuMusicUrl = ""; // Reset menu music state
             if (fadeInterval) clearInterval(fadeInterval);
             bgMusic.volume = 1;
-            // bgMusic.pause();
-            bgMusic.removeAttribute('src'); // No audio for levels
+            bgMusic.pause();
+            if (isPracticeMode) {
+                bgMusic.src = "./assets/535331_stay-inside-me.mp3";
+            } else if (levelCategories[catIndex].levels[lvlIndex].audioUrl) {
+                bgMusic.src = levelCategories[catIndex].levels[lvlIndex].audioUrl;
+            } else {
+                bgMusic.removeAttribute('src');
+            }
 
             for (let row = 0; row < layout.length; row++) {
                 for (let col = 0; col < layout[row].length; col++) {
@@ -503,7 +525,7 @@
             checkSkinUnlocks('editor', null);
             gameState = "EDITOR";
             editorCameraX = 0;
-            // bgMusic.pause();
+            bgMusic.pause();
             if (existingLayout) {
                 editorLayout = Array.from({length: 10}, (_, r) => {
                     let rowStr = existingLayout[r] || "";
@@ -585,15 +607,13 @@
             if (gameState === "DEAD") return;
             gameState = "DEAD";
             attempts++;
-            // bgMusic.pause();
+            bgMusic.pause();
             if (!isPracticeMode || checkpoints.length === 0) {
                 bgMusic.currentTime = 0;
             }
             
-            /* if (crashSound) {
-                crashSound.currentTime = 0;
-                crashSound.play().catch(e => console.log("Crash sound play failed", e));
-            } */
+            crashSound.currentTime = 0;
+            crashSound.play().catch(e => console.log("Crash sound play failed", e));
             
             // Automatic respawn after 0.8 seconds
             setTimeout(() => {
@@ -621,13 +641,46 @@
         }
 
         function playMenuMusic(musicUrl) {
-            // Remove all audio references
-            if (!bgMusic.paused) {
-                // bgMusic.pause();
+            const targetMusic = musicUrl || "./assets/title_theme.mp3";
+            if (currentMenuMusicUrl !== targetMusic) {
+                currentMenuMusicUrl = targetMusic;
+                
+                if (fadeInterval) clearInterval(fadeInterval);
+                
+                const startFadeIn = () => {
+                    bgMusic.pause();
+                    bgMusic.src = targetMusic;
+                    bgMusic.volume = 0;
+                    bgMusic.play().catch(e => console.log("Menu music play failed", e));
+                    
+                    fadeInterval = setInterval(() => {
+                        if (bgMusic.volume < 0.9) {
+                            bgMusic.volume = Math.min(1, bgMusic.volume + 0.1);
+                        } else {
+                            bgMusic.volume = 1;
+                            clearInterval(fadeInterval);
+                        }
+                    }, 50);
+                };
+
+                if (!bgMusic.paused && bgMusic.src) {
+                    fadeInterval = setInterval(() => {
+                        if (bgMusic.volume > 0.1) {
+                            bgMusic.volume = Math.max(0, bgMusic.volume - 0.1);
+                        } else {
+                            bgMusic.volume = 0;
+                            clearInterval(fadeInterval);
+                            startFadeIn();
+                        }
+                    }, 50);
+                } else {
+                    startFadeIn();
+                }
+            } else if (bgMusic.paused) {
+                if (fadeInterval) clearInterval(fadeInterval);
+                bgMusic.volume = 1;
+                bgMusic.play().catch(e => console.log("Menu music play failed", e));
             }
-            bgMusic.removeAttribute('src');
-            currentMenuMusicUrl = ""; // Reset menu music state
-            if (fadeInterval) clearInterval(fadeInterval);
         }
 
         function returnToMenu() {
@@ -707,10 +760,10 @@
             if (e.code === "Escape" || e.code === "KeyP") {
                 if (gameState === "PLAYING") {
                     gameState = "PAUSED";
-                    // bgMusic.pause();
+                    bgMusic.pause();
                 } else if (gameState === "PAUSED") {
                     gameState = "PLAYING";
-                    // bgMusic.play().catch(e => console.log("Audio play failed", e));
+                    bgMusic.play().catch(e => console.log("Audio play failed", e));
                 }
             } else if (e.code === "Space") { 
                 if (gameState === "START") {
@@ -855,7 +908,7 @@
                             menuState = "SKIN_SELECT";
                             currentSkinIndex = 0;
                             menuScrollX = 0;
-                            playMenuMusic();
+                            playMenuMusic("./assets/hinkik_-_explorers.mp3");
                             return;
                         }
                     }
@@ -917,7 +970,29 @@
                         menuState = "SHOP";
                         currentShopIndex = 0;
                         shopPage = 0;
+                        shopVideoVisible = false;
+                        clearTimeout(shopVideoTimeout);
+                        
+                        // Fade out the menu music, but hold off on playing Isolation.mp4
+                        currentMenuMusicUrl = "SHOP_DELAY";
+                        if (fadeInterval) clearInterval(fadeInterval);
+                        fadeInterval = setInterval(() => {
+                            if (bgMusic.volume > 0.1) {
+                                bgMusic.volume = Math.max(0, bgMusic.volume - 0.1);
+                            } else {
+                                bgMusic.volume = 0;
+                                bgMusic.pause();
+                                clearInterval(fadeInterval);
+                            }
+                        }, 50);
 
+                        shopVideoTimeout = setTimeout(() => {
+                            if (menuState === "SHOP") {
+                                shopVideoVisible = true;
+                                playMenuMusic("./assets/isolation.mp4");
+                                shopBgVideo.play().catch(e => console.log("Video play failed", e));
+                            }
+                        }, 7046);
                         return;
                     }
 
@@ -964,8 +1039,11 @@
                 } else if (menuState === "SHOP") {
                     if (mouseX >= 20 && mouseX <= 100 && mouseY >= 20 && mouseY <= 50) {
                         menuState = "SKIN_SELECT";
-                        playMenuMusic();
-
+                        playMenuMusic("./assets/hinkik_-_explorers.mp3");
+                        clearTimeout(shopVideoTimeout);
+                        shopBgVideo.pause();
+                        shopVideoVisible = false;
+                        shopVideoOpacity = 0;
                         return;
                     }
 
@@ -1031,13 +1109,13 @@
                 if (mouseX >= startX && mouseX <= startX + btnWidth) {
                     if (mouseY >= 150 && mouseY <= 150 + btnHeight) {
                         gameState = "PLAYING";
-                        // bgMusic.play().catch(e => {});
+                        bgMusic.play().catch(e => {});
                     } else if (mouseY >= 210 && mouseY <= 210 + btnHeight) {
                         isPracticeMode = !isPracticeMode;
                         checkpoints = [];
-                        // bgMusic.pause();
+                        bgMusic.pause();
                         if (isPracticeMode) {
-                            // bgMusic.src = "./assets/535331_stay-inside-me.mp3";
+                            bgMusic.src = "./assets/535331_stay-inside-me.mp3";
                         } else {
                             const lvlUrl = levelCategories[currentCategoryIndex].levels[currentLevelIndex].audioUrl;
                             if (lvlUrl) bgMusic.src = lvlUrl;
@@ -1048,7 +1126,7 @@
                         const setTimeAndPlay = () => {
                             bgMusic.currentTime = targetTime;
                             gameState = "PLAYING";
-                            // bgMusic.play().catch(e => {});
+                            bgMusic.play().catch(e => {});
                         };
                         if (bgMusic.readyState >= 1) {
                             setTimeAndPlay();
@@ -1070,7 +1148,7 @@
             } else if (gameState === "PLAYING") {
                 if (mouseX >= canvas.width - 45 && mouseX <= canvas.width - 15 && mouseY >= 15 && mouseY <= 45) {
                     gameState = "PAUSED";
-                    // bgMusic.pause();
+                    bgMusic.pause();
                     return;
                 }
                 isHolding = true; 
@@ -1365,7 +1443,7 @@
             // Check Level End
             if (player.x > levelEnd) {
                 gameState = "COMPLETE";
-                // bgMusic.pause();
+                bgMusic.pause();
             }
             
             // Screen Bounds (Floor & Ceiling)

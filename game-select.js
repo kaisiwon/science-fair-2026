@@ -6,11 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const fractionFarmerBtn = document.getElementById('select-fraction-farmer');
     const vectorVoyageBtn = document.getElementById('select-vector-voyage');
     const cipherHeistBtn = document.getElementById('select-cipher-heist');
-    const mathDashBtn = document.getElementById('select-math-dash');
-    const pizzaFractionParlourBtn = document.getElementById('select-pizza-fraction-parlour');
-    const numberNomadBtn = document.getElementById('select-number-nomad');
-    const mergeMatrixBtn = document.getElementById('select-merge-matrix');
-    const balanceIslandBtn = document.getElementById('select-balance-island');
 
     numberForgeBtn.addEventListener('click', () => {
         window.location.href = 'number-forge.html';
@@ -38,25 +33,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cipherHeistBtn.addEventListener('click', () => {
         window.location.href = 'cipher-heist.html';
-    });
-
-    mathDashBtn.addEventListener('click', () => {
-        window.location.href = 'mathdash.html';
-    });
-
-    pizzaFractionParlourBtn.addEventListener('click', () => {
-        window.location.href = 'pizza-fraction-parlour.html';
-    });
-
-    numberNomadBtn.addEventListener('click', () => {
-        window.location.href = 'number-nomad.html';
-    });
-
-    mergeMatrixBtn.addEventListener('click', () => {
-        window.location.href = 'merge-matrix.html';
-    });
-
-    balanceIslandBtn.addEventListener('click', () => {
-        window.location.href = 'balance-island.html';
     });
 });
