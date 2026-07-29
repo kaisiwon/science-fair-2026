@@ -1,0 +1,2624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Math Dash</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            background-color: #1a1a2e;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            border: 4px solid #333;
+        }
+        #instructions {
+            margin-top: 15px;
+            text-align: center;
+            color: #aaa;
+        }
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #111;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Loading Assets...</div>
+        <div id="loading-bar-container" style="width: 400px; height: 20px; border: 3px solid #fff; padding: 2px;">
+            <div id="loading-bar" style="width: 0%; height: 100%; background-color: #00ffcc;"></div>
+        </div>
+        <button id="start-btn" style="display: none; margin-top: 20px; padding: 10px 20px; font-size: 18px; cursor: pointer;">Click to Start</button>
+    </div>
+
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div id="instructions">
+        Press <strong>SPACE</strong> or <strong>CLICK</strong> to Jump.<br>
+        Dodge the spikes, jump on the blocks, and reach the end!
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // --- GAME SETTINGS & CONSTANTS ---
+        const TILE_SIZE = 40;
+        const GRAVITY = 0.55;
+        const JUMP_FORCE = -11;
+        const SPEED = 6.75; // Blocks per second (6.75 matches the previous speed of 4.5 pixels/frame)
+        
+        // --- LEVEL DATA ---
+        // 'X' = Block, '^' = Spike, '@' = Level End
+        const levelCategories = [
+
+            {
+                name: "Play",
+
+                levels: [
+                    {
+                        name: "Geometry Dash - Demo",
+                        song: "Back on Dash - DJVI",
+
+                        bgColor: "#2878ff",
+                        blockColor: "#003399",
+                        layout: [
+                            "                                                                                                                                  XXXXXXXX  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXvvvvvvvvvvvvvvvvvvvvvv,,,,,,,,,,,,,,,,,,,,,,,,                                                  XvvvvvvOvvvvvvOvvvvvvv   vvvvvvOvvvvvvvvvOvvvvvv   vvvvvvvvvvOvvvvvvvvvvvvvvvvvvOvvvvvvvvvv                                                                                                         @",
+                            "                                                                                                                                              .         X       P,,              X     X                                         X                                                  Xvvvvvvvvvvvvvvvvvvvvv   vvvvvvvvvvvvvvvvvvvvvvv   vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv                                                                     ",
+                            "                                                                                                                                                                        B       X      X             X             X             X                                                                              X                X                                       X                                                        ",
+                            "                                                                                                                                                                                                    X       X                   X                                                                              X                                                        X                                                                                                                               ",
+                            "                                                                                                                                                           B                                X          X           X      X      X                                                  U                                                                                    Xvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv                                                                       ",
+                            "                                                                                                                                                                          YBYBYB>                                               X                                      D     C                                                                     X                                                                                        ",
+                            "                                                                                                                                                                                  XX       X            X             X          X                                                  X                                                              X                     W                                                                                      ",
+                            "                                                                           O                                                                                                    X                                                                                                   X                                                              X                                                                                    ",
+                            "                                                                           ^^                                                X  Y ..........................  .....................^^^^^^^^^^^^^^^^^^^^^^^^^^                    <                                               P. X                                            X                 X                     X^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                                                       ",
+                            "                                  ^                       ^XXXXXXXXXXXXXXXXXX                                P^^^     P...   ,    XXXXXXXXXXXXXXXXXXXXXXXXXX                                            C        XXXX                                              R^^^^.        XXXX^^^^^^^^^^^^^^^^^^^^^^^^^^^X^^^^^^^^^^^^^^^^X^^^^^^^^^^^^^^^^^X^^^^^^^^^^^^^^^^^^^^^^                                                                                                                                                                                                                              "
+                        ] 
+                    },
+                    {
+                        name: "1. Stereo Madness",
+                        song: "Stereo Madness",
+
+                        bgColor: "#2878ff",
+                        blockColor: "#003399",
+                        layout: [
+                            "                                                                                                                                                                                                                                                                                                                               @",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                    XXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                             >                                                                                                                 <                                                                                                ",
+                            "                                                                                                                                              X                                                                                                                                                                                 ",
+                            "                                      ^                         XXX                                                                          XXX            X                    X                      X                                                      X                             XX                                 ",
+                            "                   ^       ^         XXX      ^      XXXX      XXXXXXX        XXXX      XXXX     XXXXX       XXX    XXXXX XXXXX     XXXX   XXXXXXX        XXXXX                XXXXX                  XXXXX     XXXXX        XXXXX          XXXX           XXXXX          XXX XXX        XXXXXX        XXXX     XXXXX        ",
+                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        ]
+                    },
+                    {
+                        name: "1. Stereo Madness - Full Version",
+                        song: "Stereo Madness",
+
+                        bgColor: "#2878ff",
+                        blockColor: "#003399",
+                        layout: [
+                            "                                                                                                                                                                                                                                                                                                                               @",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                    XXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                             >                                                                                                                 <                                                                                                ",
+                            "                                                                                                                                              X                                                                                                                                                                                 ",
+                            "                                      ^                         XXX                                                                          XXX            X                    X                      X                                                      X                             XX                                 ",
+                            "                   ^       ^         XXX      ^      XXXX      XXXXXXX        XXXX      XXXX     XXXXX       XXX    XXXXX XXXXX     XXXX   XXXXXXX        XXXXX                XXXXX                  XXXXX     XXXXX        XXXXX          XXXX           XXXXX          XXX XXX        XXXXXX        XXXX     XXXXX        ",
+                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        ]
+                    },
+                    {
+                        name: "2. Back on Track",
+                        song: "Back on Track - Cut Version",
+
+                        bgColor: "#a328ff",
+                        blockColor: "#550099",
+                        layout: [
+                            "                                                                                                                                                                                                                                                                                                                               @",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                    XXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
+                            "                                                                                                                   X       X         X      X            X      X                                                                                                                                                               ",
+                            "                                                                                                             >     X       X         X      X            X      X                                  <                                                                                                                            ",
+                            "                                                                                                                   X       X         X      X            X      X                                                                                                                                                               ",
+                            "                                                                XXXX                          XX                   X   C   X         X   C  X            X   C  X                  X                             P  XX                                                                                                        ",
+                            "                   P              P XX      XXXXXX       P XX      P XX   XXXX      ^^              XX P   XX P   XX P        X       X         X      X            X      X       ^^        XXX            P   X          XXXXXX          XXX P    XXX P    XXX P                                                                       ",
+                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        ]
+                    },
+                    {
+                        name: "2. Back on Track - Full Version",
+                        song: "Back on Track",
+
+                        bgColor: "#a328ff",
+                        blockColor: "#550099",
+                        layout: [
+                            "                                                                                                                                                                                                                                                                                                                               @",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                    XXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
+                            "                                                                                                                   X       X         X      X            X      X                                                                                                                                                               ",
+                            "                                                                                                             >     X       X         X      X            X      X                                  <                                                                                                                            ",
+                            "                                                                                                                   X       X         X      X            X      X                                                                                                                                                               ",
+                            "                                                                XXXX                          XX                   X   C   X         X   C  X            X   C  X                  X                             P  XX                                                                                                        ",
+                            "                   P              P XX      XXXXXX       P XX      P XX   XXXX      ^^              XX P   XX P   XX P        X       X         X      X            X      X       ^^        XXX            P   X          XXXXXX          XXX P    XXX P    XXX P                                                                       ",
+                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        ]
+                    },
+                    {
+                        name: "3. Polargeist",
+                        song: "Polargeist - Cut Version",
+
+                        bgColor: "#28ff8c",
+                        blockColor: "#00994d",
+                        layout: [
+                            "                                                                                                                                                                                                                                                                                                                               @",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                    XXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                   O                   O                                                                                                                                                                                        ",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                   O            XXXX              O           XXXX             O             XX             O                                                                  O            O                                                                                                   ",
+                            "                   O       O         XXX      ^           ^   XXXXXXXX      ^                                                                    ^   XXXXXXXX      ^           ^    XXXXXXXX             O    O      XXXXX         O     XXXXX         O     XXXXX                  XXXXXX           XXXXXXX           XXXXXXX           XXXXXXX                                       ",
+                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        ]
+                    },
+                    {
+                        name: "3.1. Polargeist - Full Version",
+                        song: "Polargeist - Full Version",
+
+                        bgColor: "#28ff8c",
+                        blockColor: "#00994d",
+                        layout: [
+                            "                                                                                                                                                                                                                                                                                                                               @",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                                                                                                                                                                                                                                ",
+                            "                                                                                                                   OXXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
+                            "                                                                                                                   O                   O                                                                                                                                                                                        ",
+                            "                                                                                                                 O                   O                                                                                                                                                                                        ",
+                            "                                                                                                               O                                                                                                                                                                                                              ",
+                            "                                                   O            XXXX              O           XXXX           O             XXXX             O                                                                  O            O                                                                                                   ",
+                            "                   O       O         XXX      ^           ^   XXXXXXXX      ^           ^   XXXXXXXX      ^           ^    XXXXXXXX             O    O      XXXXX         O     XXXXX         O     XXXXX                  XXXXXX           XXXXXXX           XXXXXXX           XXXXXXX                                       ",
+                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        ]
+                    },
+                ]
+            }
+        ];
+
+        // --- GAME STATE ---
+        let currentCategoryIndex = 0;
+        let currentLevelIndex = 0;
+        let attempts = 1;
+        let gameState = "START"; // START, PLAYING, DEAD, COMPLETE, ALL_CLEAR, PAUSED
+        let menuState = "CATEGORY_SELECT"; // CATEGORY_SELECT, LEVEL_SELECT, SKIN_SELECT, SHOP
+        let menuScrollX = 0;
+        let currentSkinIndex = 0;
+        let hoveredSkinIndex = -1;
+        let currentShopIndex = 0;
+        let hoveredShopIndex = -1;
+        let skinPage = 0;
+        let shopPage = 0;
+        let shopVideoTimeout = null;
+        let totalOrbs = parseInt(localStorage.getItem("gd_orbs")) || 0;
+        const skins = [
+            { id: 'default', name: "Default Cube", color: "#00ffcc", icon: "normal", shipIndex: 0, conditionText: "Unlocked by default" },
+            { id: 'novice', name: "Novice Cube", color: "#ff0055", icon: "angry", shipIndex: 1, conditionText: "Reach 25% on any level" },
+            { id: 'advanced', name: "Advanced Cube", color: "#9900ff", icon: "ninja", shipIndex: 2, conditionText: "Reach 50% on any level" },
+            { id: 'expert', name: "Expert Cube", color: "#ffcc00", icon: "shades", shipIndex: 3, conditionText: "Complete any level (100%)" },
+            { id: 'creator', name: "Creator Cube", color: "#ffffff", icon: "robot", shipIndex: 4, conditionText: "Open the Level Editor" },
+            { id: 'shop_1', name: "Neon Cube", color: "#00ff00", icon: "robot", shipIndex: 5, conditionText: "Buy in The Shop", cost: 500 },
+            { id: 'shop_2', name: "Magma Cube", color: "#ff4400", icon: "angry", shipIndex: 6, conditionText: "Buy in The Shop", cost: 1000 },
+            { id: 'shop_3', name: "Shadow Cube", color: "#333333", icon: "ninja", shipIndex: 7, conditionText: "Buy in The Shop", cost: 2500 }
+        ];
+        let unlockedSkins = JSON.parse(localStorage.getItem("gd_unlocked_skins")) || ['default'];
+        let equippedSkin = localStorage.getItem("gd_equipped_skin") || 'default';
+        let newUnlockedSkinQueue = [];
+        let skinUnlockPopup = null;
+        
+        // Load saved progress from localStorage
+        let savedProgress = JSON.parse(localStorage.getItem("gd_progress")) || {};
+        levelCategories.forEach((cat, cIdx) => {
+            cat.levels.forEach((lvl, lIdx) => {
+                lvl.bestProgress = savedProgress[`${cIdx}-${lIdx}`] || 0;
+                lvl.bestPracticeProgress = savedProgress[`${cIdx}-${lIdx}-practice`] || 0;
+            });
+        });
+
+        let isHolding = false;
+        let player = {
+            x: 100,
+            y: 0,
+            w: 30,
+            h: 30,
+            dx: (SPEED * TILE_SIZE) / 60, // Convert blocks/sec to pixels/frame assuming 60 FPS
+            dy: 0,
+            grounded: false,
+            rotation: 0,
+            mode: 'cube',
+            gravity: 1,
+            jumpBuffered: false,
+            isDashing: false
+        };
+
+        let cameraX = 0;
+        let currentZoom = 0.4;
+        let targetZoom = 1;
+        let obstacles = [];
+        let levelEnd = 0;
+        let coins = 0;
+        let isPracticeMode = false;
+        let checkpoints = [];
+        let jumpBufferTimeout = null;
+        let particles = [];
+        let keys = {};
+        
+        // Editor State
+        let editingLevelIndex = -1;
+        let editorLayout = null;
+        let editorCameraX = 0;
+        let currentBrushIndex = 0;
+        let isPaintingEditor = false;
+        const brushes = [
+            {char: 'X', name: 'Block'},
+            {char: '^', name: 'Spike'},
+            {char: 'O', name: 'Orb'},
+            {char: 'D', name: 'Dash Orb'},
+            {char: 'P', name: 'Pad'},
+            {char: '>', name: 'Ship'},
+            {char: 'U', name: 'UFO'},
+            {char: 'W', name: 'Wave'},
+            {char: 'Q', name: 'Ball'},
+            {char: '<', name: 'Cube'},
+            {char: '@', name: 'End'},
+            {char: ' ', name: 'Erase'}
+        ];
+        
+        // Load saved custom levels
+        let savedCustomLevels = JSON.parse(localStorage.getItem("gd_custom_levels")) || [];
+        if (savedCustomLevels.length > 0) {
+            levelCategories[0].levels.push(...savedCustomLevels);
+        }
+        
+        // --- AUDIO SETUP ---
+        let bgMusic = new Audio();
+        bgMusic.loop = true;
+        let currentMenuMusicUrl = "";
+        let fadeInterval = null;
+        let crashSound;
+        let skinBgImage = new Image();
+        skinBgImage.src = "./assets/pixel_dungeon_with_giant_robot.png";
+        
+
+        
+        let shipImages = [];
+        const validShipNumbers = [
+            ...Array.from({length: 29}, (_, i) => i + 1),  // Loads 1-29
+            ...Array.from({length: 24}, (_, i) => i + 31), // Loads 31-54
+            ...Array.from({length: 40}, (_, i) => i + 56), // Loads 56-95
+            ...Array.from({length: 24}, (_, i) => i + 97)  // Loads 97-120
+        ];
+        const preloader = document.getElementById('preloader');
+        const loadingBar = document.getElementById('loading-bar');
+        const startBtn = document.getElementById('start-btn');
+
+        let assetsLoaded = 0;
+        let totalAssets = validShipNumbers.length + 1; // +1 skinBgImage
+        // 2. No Preload Essential Audio (Crash Sound) - Handled dynamically
+        // 3. Start Game Event
+        function updateProgress() {
+            assetsLoaded++;
+            const percent = (assetsLoaded / totalAssets) * 100;
+            loadingBar.style.width = percent + '%';
+            
+            if (assetsLoaded >= totalAssets) {
+                // Everything loaded, wait for user click to bypass autoplay policies
+                startBtn.style.display = 'block';
+            }
+        }
+
+        // 1. Preload Images (Ships + BG)
+        skinBgImage.onload = updateProgress;
+        skinBgImage.onerror = updateProgress; // Don't hang if an asset fails
+
+        validShipNumbers.forEach(num => {
+            let img = new Image();
+            img.onload = updateProgress;
+            img.onerror = updateProgress; 
+            img.src = `./assets/ships_with_bg/ship_${num}.png`;
+            shipImages.push(img);
+        });
+
+
+        function checkSkinUnlocks(event, data) {
+            let newlyUnlocked = [];
+            skins.forEach(skin => {
+                if (unlockedSkins.includes(skin.id)) return;
+                let unlock = false;
+                if (skin.id === 'novice' && event === 'progress' && data >= 25) unlock = true;
+                if (skin.id === 'advanced' && event === 'progress' && data >= 50) unlock = true;
+                if (skin.id === 'expert' && event === 'progress' && data >= 100) unlock = true;
+                if (skin.id === 'creator' && event === 'editor') unlock = true;
+                
+                if (unlock) {
+                    unlockedSkins.push(skin.id);
+                    localStorage.setItem("gd_unlocked_skins", JSON.stringify(unlockedSkins));
+                    newlyUnlocked.push(skin);
+                }
+            });
+            if (newlyUnlocked.length > 0) {
+                newUnlockedSkinQueue.push(...newlyUnlocked);
+            }
+        }
+
+        // --- LEVEL PARSER ---
+        function loadLevel(catIndex, lvlIndex) {
+            obstacles = [];
+            const layout = levelCategories[catIndex].levels[lvlIndex].layout;
+            
+            // Set up level music
+            currentMenuMusicUrl = ""; // Reset menu music state
+            if (fadeInterval) clearInterval(fadeInterval);
+            bgMusic.volume = 1;
+            bgMusic.pause();
+            bgMusic.removeAttribute('src'); // No audio for levels
+
+            for (let row = 0; row < layout.length; row++) {
+                for (let col = 0; col < layout[row].length; col++) {
+                    const char = layout[row][col];
+                    const x = col * TILE_SIZE;
+                    const y = row * TILE_SIZE;
+
+                    if (char === 'X') {
+                        obstacles.push({ type: 'block', x, y, w: TILE_SIZE, h: TILE_SIZE });
+                    } else if (char === '^') {
+                        obstacles.push({ type: 'spike', x, y, w: TILE_SIZE, h: TILE_SIZE });
+                    } else if (char === '.') {
+                        obstacles.push({ type: 'halfSpike', x, y: y + TILE_SIZE / 2, w: TILE_SIZE, h: TILE_SIZE / 2 });
+                    } else if (char === 'v') {
+                        obstacles.push({ type: 'spikeDown', x, y, w: TILE_SIZE, h: TILE_SIZE });
+                    } else if (char === ',') {
+                        obstacles.push({ type: 'halfSpikeDown', x, y, w: TILE_SIZE, h: TILE_SIZE / 2 });
+                    } else if (char === 'O') {
+                        obstacles.push({ type: 'orb', x, y, w: TILE_SIZE, h: TILE_SIZE });
+                    } else if (char === 'D') {
+                        obstacles.push({ type: 'dashOrb', x, y, w: TILE_SIZE, h: TILE_SIZE });
+                    } else if (char === '>') {
+                        obstacles.push({ type: 'portalShip', x, y: y - TILE_SIZE, w: TILE_SIZE, h: TILE_SIZE * 3 });
+                    } else if (char === 'U') {
+                        obstacles.push({ type: 'portalUFO', x, y: y - TILE_SIZE, w: TILE_SIZE, h: TILE_SIZE * 3 });
+                    } else if (char === 'W') {
+                        obstacles.push({ type: 'portalWave', x, y: y - TILE_SIZE, w: TILE_SIZE, h: TILE_SIZE * 3 });
+                    } else if (char === 'Q') {
+                        obstacles.push({ type: 'portalBall', x, y: y - TILE_SIZE, w: TILE_SIZE, h: TILE_SIZE * 3 });
+                    } else if (char === '<') {
+                        obstacles.push({ type: 'portalCube', x, y: y - TILE_SIZE, w: TILE_SIZE, h: TILE_SIZE * 3 });
+                    } else if (char === 'Y') {
+                        obstacles.push({ type: 'portalGravityInvert', x, y: y - TILE_SIZE, w: TILE_SIZE, h: TILE_SIZE * 3 });
+                    } else if (char === 'B') {
+                        obstacles.push({ type: 'portalGravityNormal', x, y: y - TILE_SIZE, w: TILE_SIZE, h: TILE_SIZE * 3 });
+                    } else if (char === 'P') {
+                        obstacles.push({ type: 'pad', x, y: y + TILE_SIZE * 0.75, w: TILE_SIZE, h: TILE_SIZE * 0.25 });
+                    } else if (char === 'R') {
+                        obstacles.push({ type: 'redPad', x, y: y + TILE_SIZE * 0.75, w: TILE_SIZE, h: TILE_SIZE * 0.25 });
+                    } else if (char === 'C') {
+                        obstacles.push({ type: 'coin', x, y: y + TILE_SIZE / 4, w: TILE_SIZE / 2, h: TILE_SIZE / 2, collected: false });
+                    } else if (char === '@') {
+                        levelEnd = x;
+                    }
+                }
+            }
+            if (levelEnd === 0) {
+                levelEnd = obstacles.length > 0 ? Math.max(...obstacles.map(o => o.x)) + 800 : 800;
+            }
+            resetPlayer();
+        }
+
+        function resetPlayer() {
+            player.x = 100;
+            player.y = 200;
+            player.dy = 0;
+            player.dx = (SPEED * TILE_SIZE) / 60;
+            player.rotation = 0;
+            player.mode = 'cube';
+            player.w = 30;
+            player.h = 30;
+            isHolding = false;
+            player.gravity = 1;
+            player.jumpBuffered = false;
+            player.isDashing = false;
+            if (jumpBufferTimeout) clearTimeout(jumpBufferTimeout);
+            cameraX = 0;
+            currentZoom = 0.6; // Start zoomed out to see more of the level initially
+            currentZoom = 0.4; // Start very zoomed out to see more of the level initially
+            targetZoom = 1;
+            coins = 0;
+            particles = [];
+            for (let obs of obstacles) {
+                if (obs.type === 'coin') obs.collected = false;
+                if (obs.type === 'orb' || obs.type === 'dashOrb') obs.hit = false; // Reset orbs
+            }
+        }
+
+        function loadCheckpoint() {
+            if (checkpoints.length > 0) {
+                const cp = checkpoints[checkpoints.length - 1];
+                player.x = cp.x;
+                player.y = cp.y;
+                player.dy = 0;
+                player.dx = (SPEED * TILE_SIZE) / 60;
+                player.rotation = cp.rotation;
+                player.mode = cp.mode;
+                player.gravity = cp.gravity;
+                player.isDashing = false;
+                cameraX = cp.cameraX;
+                currentZoom = cp.currentZoom || 1;
+                targetZoom = cp.targetZoom || 1;
+                particles = [];
+                bgMusic.currentTime = cp.musicTime || 0;
+                
+                if (player.mode === 'cube') {
+                    player.w = 30; player.h = 30;
+                } else if (player.mode === 'ship') {
+                    player.w = 45; player.h = 15;
+                } else if (player.mode === 'ufo') {
+                    player.w = 40; player.h = 24;
+                } else if (player.mode === 'wave') {
+                    player.w = 20; player.h = 20;
+                } else if (player.mode === 'ball') {
+                    player.w = 30; player.h = 30;
+                }
+            } else {
+                resetPlayer();
+            }
+        }
+
+        function openEditor(existingLayout = null) {
+            checkSkinUnlocks('editor', null);
+            gameState = "EDITOR";
+            editorCameraX = 0;
+            bgMusic.pause();
+            if (existingLayout) {
+                editorLayout = Array.from({length: 10}, (_, r) => {
+                    let rowStr = existingLayout[r] || "";
+                    let arr = rowStr.split('');
+                    while(arr.length < 200) arr.push(' ');
+                    return arr;
+                });
+            } else {
+                editorLayout = Array.from({length: 10}, () => Array(200).fill(' '));
+            }
+        }
+
+        function saveAndPlayEditor() {
+            let newLayoutStr = editorLayout.map(row => row.join('').replace(/\s+$/, ''));
+            if (editingLevelIndex !== -1 && currentCategoryIndex === 0 && levelCategories[0].levels[editingLevelIndex].isUserCreated) {
+                levelCategories[0].levels[editingLevelIndex].layout = newLayoutStr;
+            } else {
+                let newLevel = {
+                    name: "Custom Level " + (levelCategories[0].levels.length + 1),
+                    song: "Custom Level",
+                    audioUrl: "",
+                    bgColor: "#1a1a2e",
+                    blockColor: "#0f3460",
+                    layout: newLayoutStr,
+                    isUserCreated: true
+                };
+                levelCategories[0].levels.push(newLevel);
+                currentCategoryIndex = 0;
+                editingLevelIndex = levelCategories[0].levels.length - 1;
+            }
+            currentLevelIndex = editingLevelIndex;
+            
+            localStorage.setItem("gd_custom_levels", JSON.stringify(levelCategories[0].levels.filter(l => l.isUserCreated)));
+
+            attempts = 1;
+            isPracticeMode = false;
+            checkpoints = [];
+            loadLevel(currentCategoryIndex, currentLevelIndex);
+            gameState = "PLAYING";
+            if (bgMusic.src) bgMusic.play().catch(e => {});
+        }
+
+        function paintEditor(mx, my) {
+            if (my > 40) {
+                let col = Math.floor((mx + editorCameraX) / TILE_SIZE);
+                let row = Math.floor(my / TILE_SIZE);
+                if (row >= 0 && row < 10 && col >= 0) {
+                    while(col >= editorLayout[row].length) {
+                        for(let r=0; r<10; r++) editorLayout[r].push(' ');
+                    }
+                    editorLayout[row][col] = brushes[currentBrushIndex].char;
+                }
+            }
+        }
+
+        function placeCheckpoint() {
+            if (gameState === "PLAYING" && isPracticeMode && player.grounded) {
+                checkpoints.push({
+                    x: player.x,
+                    y: player.y,
+                    rotation: player.rotation,
+                    mode: player.mode,
+                    gravity: player.gravity,
+                    cameraX: cameraX,
+                    currentZoom: currentZoom,
+                    targetZoom: targetZoom,
+                    musicTime: bgMusic.currentTime
+                });
+            }
+        }
+
+        function removeCheckpoint() {
+            if (gameState === "PLAYING" && isPracticeMode && checkpoints.length > 0) {
+                checkpoints.pop();
+            }
+        }
+
+        function die() {
+            if (gameState === "DEAD") return;
+            gameState = "DEAD";
+            attempts++;
+            bgMusic.pause();
+            if (!isPracticeMode || checkpoints.length === 0) {
+                bgMusic.currentTime = 0;
+            }
+            
+            if (crashSound) {
+                crashSound.currentTime = 0;
+                crashSound.play().catch(e => console.log("Crash sound play failed", e));
+            }
+            
+            // Automatic respawn after 0.8 seconds
+            setTimeout(() => {
+                if (skinUnlockPopup) {
+                    const waitForPopup = setInterval(() => {
+                        if (!skinUnlockPopup) {
+                            clearInterval(waitForPopup);
+                            doRespawn();
+                        }
+                    }, 100);
+                    return;
+                }
+                doRespawn();
+            }, 800);
+            
+            function doRespawn() {
+                if (isPracticeMode && checkpoints.length > 0) {
+                    loadCheckpoint();
+                } else {
+                    resetPlayer();
+                }
+                gameState = "PLAYING";
+                if (bgMusic.src) bgMusic.play().catch(e => console.log("Audio play failed", e));
+            }
+        }
+
+        function playMenuMusic(musicUrl) {
+            // Remove all audio references
+            if (!bgMusic.paused) {
+                bgMusic.pause();
+            }
+            bgMusic.removeAttribute('src');
+            currentMenuMusicUrl = ""; // Reset menu music state
+            if (fadeInterval) clearInterval(fadeInterval);
+        }
+
+        function returnToMenu() {
+            gameState = "START";
+            menuState = "CATEGORY_SELECT";
+            playMenuMusic();
+        }
+
+        // --- INPUT HANDLING ---
+        function jump() {
+            if (gameState === "COMPLETE" || gameState === "ALL_CLEAR") {
+                returnToMenu();
+            } else if (gameState === "PLAYING") {
+                // Check if we are currently intersecting an un-hit orb
+                let hitOrb = false;
+                for (let obs of obstacles) {
+                    if ((obs.type === 'orb' || obs.type === 'dashOrb') && !obs.hit) {
+                        let hitBox = { x: obs.x - 15, y: obs.y - 15, w: obs.w + 30, h: obs.h + 30 };
+                        if (player.x < hitBox.x + hitBox.w && 
+                            player.x + player.w > hitBox.x && 
+                            player.y < hitBox.y + hitBox.h && 
+                            player.y + player.h > hitBox.y) {
+                            
+                            if (obs.type === 'orb') {
+                                player.dy = JUMP_FORCE * player.gravity;
+                                player.grounded = false;
+                                player.isDashing = false;
+                                obs.hit = true; // Mark as hit so it flashes
+                                setTimeout(() => obs.hit = false, 300); // Allow reuse after 300ms
+                                hitOrb = true;
+                                player.jumpBuffered = false;
+                                break;
+                            } else if (obs.type === 'dashOrb') {
+                                player.isDashing = true;
+                                player.dy = 0;
+                                player.grounded = false;
+                                obs.hit = true;
+                                setTimeout(() => obs.hit = false, 300);
+                                hitOrb = true;
+                                player.jumpBuffered = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // If no orb was hit, do a normal ground jump or buffer it
+                if (!hitOrb) {
+                    if (player.mode === 'cube') {
+                        if (player.grounded) {
+                            player.dy = JUMP_FORCE * player.gravity;
+                            player.grounded = false;
+                        } else {
+                            player.jumpBuffered = true;
+                            if (jumpBufferTimeout) clearTimeout(jumpBufferTimeout);
+                            jumpBufferTimeout = setTimeout(() => player.jumpBuffered = false, 150);
+                        }
+                    } else if (player.mode === 'ball') {
+                        if (player.grounded) {
+                            player.gravity *= -1;
+                            player.grounded = false;
+                        } else {
+                            player.jumpBuffered = true;
+                            if (jumpBufferTimeout) clearTimeout(jumpBufferTimeout);
+                            jumpBufferTimeout = setTimeout(() => player.jumpBuffered = false, 150);
+                        }
+                    } else if (player.mode === 'ufo') {
+                        player.dy = JUMP_FORCE * 0.8 * player.gravity; // Weaker mid-air hop
+                        player.grounded = false;
+                    }
+                }
+            }
+        }
+
+        window.addEventListener("keydown", (e) => { 
+            keys[e.code] = true;
+            if (e.code === "Escape" || e.code === "KeyP") {
+                if (gameState === "PLAYING") {
+                    gameState = "PAUSED";
+                    bgMusic.pause();
+                } else if (gameState === "PAUSED") {
+                    gameState = "PLAYING";
+                    bgMusic.play().catch(e => console.log("Audio play failed", e));
+                }
+            } else if (e.code === "Space") { 
+                if (gameState === "START") {
+                    if (menuState === "CATEGORY_SELECT") {
+                        currentLevelIndex = 0;
+                        menuScrollX = 0;
+                        menuState = "LEVEL_SELECT";
+                        playMenuMusic(levelCategories[currentCategoryIndex].menuMusic);
+                    } else if (menuState === "LEVEL_SELECT") {
+                        attempts = 1;
+                        isPracticeMode = false;
+                        checkpoints = [];
+                        loadLevel(currentCategoryIndex, currentLevelIndex);
+                        gameState = "PLAYING";
+                        if (bgMusic.src) bgMusic.play().catch(e => console.log("Audio play failed", e));
+                    }
+                } else {
+                    isHolding = true; 
+                    jump(); 
+                }
+            } else if (e.code === "ArrowLeft" || e.code === "KeyA") {
+                if (gameState === "START" && menuState === "LEVEL_SELECT") {
+                    const levels = levelCategories[currentCategoryIndex].levels;
+                    if (levels.length > 1) {
+                        currentLevelIndex = (currentLevelIndex - 1 + levels.length) % levels.length;
+                    }
+                } else if (gameState === "START" && menuState === "SKIN_SELECT") {
+                    if (skins.length > 1) currentSkinIndex = (currentSkinIndex - 1 + skins.length) % skins.length;
+                }
+            } else if (e.code === "ArrowRight" || e.code === "KeyD") {
+                if (gameState === "START" && menuState === "LEVEL_SELECT") {
+                    const levels = levelCategories[currentCategoryIndex].levels;
+                    if (levels.length > 1) {
+                        currentLevelIndex = (currentLevelIndex + 1) % levels.length;
+                    }
+                } else if (gameState === "START" && menuState === "SKIN_SELECT") {
+                    if (skins.length > 1) currentSkinIndex = (currentSkinIndex + 1) % skins.length;
+                }
+            } else if (e.code === "KeyZ") {
+                placeCheckpoint();
+            } else if (e.code === "KeyX") {
+                removeCheckpoint();
+            }
+        });
+        window.addEventListener("keyup", (e) => { 
+            keys[e.code] = false;
+            if (e.code === "Space") isHolding = false; 
+        });
+        window.addEventListener("mousemove", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        if (gameState === "START" && menuState === "SKIN_SELECT") {
+            hoveredSkinIndex = -1;
+            for (let i = 0; i < skins.length; i++) {
+                if (i < skinPage * 12 || i >= (skinPage + 1) * 12) continue;
+                const idxOnPage = i % 12;
+                const col = idxOnPage % 4;
+                const row = Math.floor(idxOnPage / 4);
+                const boxX = 80 + col * 70;
+                const boxY = 140 + row * 70;
+                if (mouseX >= boxX && mouseX <= boxX + 50 && mouseY >= boxY && mouseY <= boxY + 50) {
+                    hoveredSkinIndex = i;
+                    break;
+                }
+            }
+        } else if (gameState === "START" && menuState === "SHOP") {
+            hoveredShopIndex = -1;
+            const shopSkins = skins.filter(s => s.cost);
+            for (let i = 0; i < shopSkins.length; i++) {
+                if (i < shopPage * 12 || i >= (shopPage + 1) * 12) continue;
+                const idxOnPage = i % 12;
+                const col = idxOnPage % 4;
+                const row = Math.floor(idxOnPage / 4);
+                const boxX = 80 + col * 70;
+                const boxY = 140 + row * 70;
+                if (mouseX >= boxX && mouseX <= boxX + 50 && mouseY >= boxY && mouseY <= boxY + 50) {
+                    hoveredShopIndex = i;
+                    break;
+                }
+            }
+        }
+
+            if (gameState === "EDITOR" && isPaintingEditor) {
+                paintEditor(e.clientX - rect.left, e.clientY - rect.top);
+            }
+        });
+        window.addEventListener("mousedown", (e) => { 
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            if (skinUnlockPopup) {
+                if (mouseX >= canvas.width/2 - 110 && mouseX <= canvas.width/2 - 10 && mouseY >= 250 && mouseY <= 290) {
+                    equippedSkin = skinUnlockPopup.id;
+                    localStorage.setItem("gd_equipped_skin", equippedSkin);
+                    skinUnlockPopup = null;
+                } else if (mouseX >= canvas.width/2 + 10 && mouseX <= canvas.width/2 + 110 && mouseY >= 250 && mouseY <= 290) {
+                    skinUnlockPopup = null;
+                }
+                return;
+            }
+
+            if (gameState === "EDITOR") {
+                if (mouseY <= 40) {
+                    if (mouseX >= 10 && mouseX <= 110) saveAndPlayEditor();
+                    else if (mouseX >= 120 && mouseX <= 180) returnToMenu();
+                    else if (mouseX >= 200) {
+                        let index = Math.floor((mouseX - 200) / 40);
+                        if (index >= 0 && index < brushes.length) currentBrushIndex = index;
+                    }
+                } else {
+                    isPaintingEditor = true;
+                    paintEditor(mouseX, mouseY);
+                }
+                return;
+            }
+
+            if (gameState === "START") {
+                if (menuState === "CATEGORY_SELECT") {
+                    for (let i = 0; i < levelCategories.length; i++) {
+                        const btnX = canvas.width / 2 - 150;
+                        const btnY = 140 + i * 60;
+                        if (mouseX >= btnX && mouseX <= btnX + 300 && mouseY >= btnY && mouseY <= btnY + 45) {
+                            currentCategoryIndex = i;
+                            currentLevelIndex = 0;
+                            menuScrollX = 0;
+                            menuState = "LEVEL_SELECT";
+                            playMenuMusic(levelCategories[currentCategoryIndex].menuMusic);
+                            return;
+                        }
+                    }
+                    
+                    const editorBtnY = 140 + levelCategories.length * 60 + 20;
+                    if (mouseY >= editorBtnY && mouseY <= editorBtnY + 45) {
+                        if (mouseX >= canvas.width / 2 - 150 && mouseX <= canvas.width / 2 - 10) {
+                            editingLevelIndex = -1;
+                            openEditor();
+                            return;
+                        } else if (mouseX >= canvas.width / 2 + 10 && mouseX <= canvas.width / 2 + 150) {
+                            menuState = "SKIN_SELECT";
+                            currentSkinIndex = 0;
+                            menuScrollX = 0;
+                            playMenuMusic();
+                            return;
+                        }
+                    }
+                } else if (menuState === "LEVEL_SELECT") {
+                    // Check Back Button
+                    if (mouseX >= 20 && mouseX <= 100 && mouseY >= 20 && mouseY <= 50) {
+                        menuState = "CATEGORY_SELECT";
+                        playMenuMusic();
+                        return;
+                    }
+
+                    const levels = levelCategories[currentCategoryIndex].levels;
+                    
+                    // Left Arrow
+                    if (levels.length > 1 && mouseX >= 50 && mouseX <= 100 && mouseY >= 180 && mouseY <= 250) {
+                        currentLevelIndex = (currentLevelIndex - 1 + levels.length) % levels.length;
+                        return;
+                    }
+                    
+                    // Right Arrow
+                    if (levels.length > 1 && mouseX >= canvas.width - 100 && mouseX <= canvas.width - 50 && mouseY >= 180 && mouseY <= 250) {
+                        currentLevelIndex = (currentLevelIndex + 1) % levels.length;
+                        return;
+                    }
+                    
+                    // Play Button
+                    const playBtnX = canvas.width / 2 - 160;
+                    const playBtnY = 245; // Moved down slightly to fit the progress bar
+                    if (mouseX >= playBtnX && mouseX <= playBtnX + 150 && mouseY >= playBtnY && mouseY <= playBtnY + 40) {
+                        attempts = 1;
+                        isPracticeMode = false;
+                        checkpoints = [];
+                        loadLevel(currentCategoryIndex, currentLevelIndex);
+                        gameState = "PLAYING";
+                        if (bgMusic.src) bgMusic.play().catch(e => console.log("Audio play failed", e));
+                        return;
+                    }
+                    
+                    // Practice Button
+                    const pracBtnX = canvas.width / 2 + 10;
+                    if (mouseX >= pracBtnX && mouseX <= pracBtnX + 150 && mouseY >= playBtnY && mouseY <= playBtnY + 40) {
+                        attempts = 1;
+                        isPracticeMode = true;
+                        checkpoints = [];
+                        loadLevel(currentCategoryIndex, currentLevelIndex);
+                        gameState = "PLAYING";
+                        if (bgMusic.src) bgMusic.play().catch(e => console.log("Audio play failed", e));
+                        return;
+                    }
+                } else if (menuState === "SKIN_SELECT") {
+                    if (mouseX >= 20 && mouseX <= 100 && mouseY >= 20 && mouseY <= 50) {
+                        menuState = "CATEGORY_SELECT";
+                        playMenuMusic();
+                        return;
+                    }
+                    const shopBtnX = canvas.width - 140;
+                    const shopBtnY = 20;
+                    if (mouseX >= shopBtnX && mouseX <= shopBtnX + 120 && mouseY >= shopBtnY && mouseY <= shopBtnY + 40) {
+                        menuState = "SHOP";
+                        currentShopIndex = 0;
+                        shopPage = 0;
+
+                        return;
+                    }
+
+                    if (skins.length > 12) {
+                        if (mouseX >= 30 && mouseX <= 60 && mouseY >= 210 && mouseY <= 250) {
+                            skinPage = Math.max(0, skinPage - 1); return;
+                        }
+                        if (mouseX >= 360 && mouseX <= 390 && mouseY >= 210 && mouseY <= 250) {
+                            skinPage = Math.min(Math.ceil(skins.length/12) - 1, skinPage + 1); return;
+                        }
+                    }
+
+                    for (let i = 0; i < skins.length; i++) {
+                        if (i < skinPage * 12 || i >= (skinPage + 1) * 12) continue;
+                        const idxOnPage = i % 12;
+                        const col = idxOnPage % 4;
+                        const row = Math.floor(idxOnPage / 4);
+                        const boxX = 80 + col * 70;
+                        const boxY = 140 + row * 70;
+                        if (mouseX >= boxX && mouseX <= boxX + 50 && mouseY >= boxY && mouseY <= boxY + 50) {
+                            currentSkinIndex = i;
+                            if (unlockedSkins.includes(skins[i].id)) {
+                                equippedSkin = skins[i].id;
+                                localStorage.setItem("gd_equipped_skin", equippedSkin);
+                            }
+                            return;
+                        }
+                    }
+                    
+                    const panelX = 420;
+                    const panelY = 130;
+                    const btnX = panelX + 35;
+                    const btnY = panelY + 190;
+                    if (mouseX >= btnX && mouseX <= btnX + 230 && mouseY >= btnY && mouseY <= btnY + 40) {
+                        const displayIndex = hoveredSkinIndex !== -1 ? hoveredSkinIndex : currentSkinIndex;
+                        const s = skins[displayIndex];
+                        if (unlockedSkins.includes(s.id)) {
+                            equippedSkin = s.id;
+                            localStorage.setItem("gd_equipped_skin", equippedSkin);
+                            currentSkinIndex = displayIndex;
+                        }
+                        return;
+                    }
+                } else if (menuState === "SHOP") {
+                    if (mouseX >= 20 && mouseX <= 100 && mouseY >= 20 && mouseY <= 50) {
+                        menuState = "SKIN_SELECT";
+                        playMenuMusic();
+
+                        return;
+                    }
+
+                    const shopSkins = skins.filter(s => s.cost);
+
+                    if (shopSkins.length > 12) {
+                        if (mouseX >= 30 && mouseX <= 60 && mouseY >= 210 && mouseY <= 250) {
+                            shopPage = Math.max(0, shopPage - 1); return;
+                        }
+                        if (mouseX >= 360 && mouseX <= 390 && mouseY >= 210 && mouseY <= 250) {
+                            shopPage = Math.min(Math.ceil(shopSkins.length/12) - 1, shopPage + 1); return;
+                        }
+                    }
+
+                    for (let i = 0; i < shopSkins.length; i++) {
+                        if (i < shopPage * 12 || i >= (shopPage + 1) * 12) continue;
+                        const idxOnPage = i % 12;
+                        const col = idxOnPage % 4;
+                        const row = Math.floor(idxOnPage / 4);
+                        const boxX = 80 + col * 70;
+                        const boxY = 140 + row * 70;
+                        if (mouseX >= boxX && mouseX <= boxX + 50 && mouseY >= boxY && mouseY <= boxY + 50) {
+                            currentShopIndex = i;
+                            if (unlockedSkins.includes(shopSkins[i].id)) {
+                                equippedSkin = shopSkins[i].id;
+                                localStorage.setItem("gd_equipped_skin", equippedSkin);
+                            }
+                            return;
+                        }
+                    }
+
+                    const panelX = 420;
+                    const panelY = 130;
+                    const btnX = panelX + 35;
+                    const btnY = panelY + 190;
+                    if (mouseX >= btnX && mouseX <= btnX + 230 && mouseY >= btnY && mouseY <= btnY + 40) {
+                        const displayIndex = hoveredShopIndex !== -1 ? hoveredShopIndex : currentShopIndex;
+                        if (displayIndex < 0 || displayIndex >= shopSkins.length) return;
+                        const s = shopSkins[displayIndex];
+                        if (unlockedSkins.includes(s.id)) {
+                            equippedSkin = s.id;
+                            localStorage.setItem("gd_equipped_skin", equippedSkin);
+                            currentShopIndex = displayIndex;
+                        } else if (totalOrbs >= s.cost) {
+                            totalOrbs -= s.cost;
+                            localStorage.setItem("gd_orbs", totalOrbs);
+                            unlockedSkins.push(s.id);
+                            localStorage.setItem("gd_unlocked_skins", JSON.stringify(unlockedSkins));
+                            equippedSkin = s.id;
+                            localStorage.setItem("gd_equipped_skin", equippedSkin);
+                            currentShopIndex = displayIndex;
+                        }
+                        return;
+                    }
+                }
+                // If clicked outside buttons, try to resume menu music if blocked
+                if (bgMusic.src && bgMusic.paused) bgMusic.play().catch(e => {});
+            } else if (gameState === "PAUSED") {
+                const btnWidth = 200;
+                const btnHeight = 45;
+                const startX = canvas.width / 2 - btnWidth / 2;
+                
+                if (mouseX >= startX && mouseX <= startX + btnWidth) {
+                    if (mouseY >= 150 && mouseY <= 150 + btnHeight) {
+                        gameState = "PLAYING";
+                        bgMusic.play().catch(e => {});
+                    } else if (mouseY >= 210 && mouseY <= 210 + btnHeight) {
+                        isPracticeMode = !isPracticeMode;
+                        checkpoints = [];
+                        bgMusic.pause();
+                        if (isPracticeMode) {
+                            bgMusic.src = "./assets/535331_stay-inside-me.mp3";
+                        } else {
+                            const lvlUrl = levelCategories[currentCategoryIndex].levels[currentLevelIndex].audioUrl;
+                            if (lvlUrl) bgMusic.src = lvlUrl;
+                            else bgMusic.removeAttribute('src');
+                        }
+                        
+                        const targetTime = Math.max(0, player.x / (SPEED * TILE_SIZE));
+                        const setTimeAndPlay = () => {
+                            bgMusic.currentTime = targetTime;
+                            gameState = "PLAYING";
+                            bgMusic.play().catch(e => {});
+                        };
+                        if (bgMusic.readyState >= 1) {
+                            setTimeAndPlay();
+                        } else {
+                            bgMusic.addEventListener('loadedmetadata', function onLoaded() {
+                                setTimeAndPlay();
+                                bgMusic.removeEventListener('loadedmetadata', onLoaded);
+                            });
+                            bgMusic.load();
+                        }
+                    } else if (levelCategories[currentCategoryIndex].levels[currentLevelIndex].isUserCreated && mouseY >= 270 && mouseY <= 270 + btnHeight) {
+                        editingLevelIndex = currentLevelIndex;
+                        openEditor(levelCategories[currentCategoryIndex].levels[currentLevelIndex].layout);
+                    } else if ((!levelCategories[currentCategoryIndex].levels[currentLevelIndex].isUserCreated && mouseY >= 270 && mouseY <= 270 + btnHeight) || 
+                               (levelCategories[currentCategoryIndex].levels[currentLevelIndex].isUserCreated && mouseY >= 330 && mouseY <= 330 + btnHeight)) {
+                        returnToMenu();
+                    }
+                }
+            } else if (gameState === "PLAYING") {
+                if (mouseX >= canvas.width - 45 && mouseX <= canvas.width - 15 && mouseY >= 15 && mouseY <= 45) {
+                    gameState = "PAUSED";
+                    bgMusic.pause();
+                    return;
+                }
+                isHolding = true; 
+                jump();
+            } else {
+                isHolding = true; 
+                jump();
+            }
+        });
+        window.addEventListener("mouseup", () => { 
+            isHolding = false; 
+            isPaintingEditor = false;
+        });
+
+        // --- PHYSICS & COLLISION ---
+        function update() {
+            if (gameState === "EDITOR") {
+                if (keys["ArrowLeft"] || keys["KeyA"]) editorCameraX = Math.max(0, editorCameraX - 15);
+                if (keys["ArrowRight"] || keys["KeyD"]) editorCameraX += 15;
+                return;
+            }
+            if (gameState !== "PLAYING") return;
+
+            // --- DYNAMIC ZOOM LOGIC ---
+            let baseZoom = 0.7;
+            if (player.mode === 'ship') baseZoom = 0.55; // Zoom out more for ship
+            else if (player.mode === 'ufo') baseZoom = 0.65;
+            else if (player.mode === 'wave') baseZoom = 0.7;
+            else if (player.mode === 'ball') baseZoom = 0.85; // Zoom in more for ball
+
+            let colorZoomOffset = 0;
+            const currentLevel = levelCategories[currentCategoryIndex].levels[currentLevelIndex];
+            if (currentLevel && currentLevel.bgColor) {
+                if (currentLevel.bgColor.match(/^#[0-2]/)) {
+                    colorZoomOffset = 0.08; // Darker backgrounds zoom in slightly more
+                }
+            }
+            
+            let densityZoomOffset = 0;
+            let incomingObstacles = 0;
+            let portalIncoming = false;
+            const zoomLookahead = 800; // Look further ahead for obstacles
+            for (let obs of obstacles) {
+                if (obs.x > player.x && obs.x < player.x + zoomLookahead) {
+                    incomingObstacles++;
+                    if (obs.type && obs.type.startsWith('portal')) portalIncoming = true;
+                }
+            }
+            
+            if (portalIncoming) densityZoomOffset += 0.25; // More dramatic zoom for portals
+            else if (incomingObstacles > 20) densityZoomOffset -= 0.15; // Zoom out more to see dense sections
+            else if (incomingObstacles < 4) densityZoomOffset += 0.1; // Zoom in more when space is empty
+            
+            targetZoom = Math.max(0.7, Math.min(1.4, baseZoom + colorZoomOffset + densityZoomOffset));
+            targetZoom = Math.max(0.4, Math.min(1.4, baseZoom + colorZoomOffset + densityZoomOffset));
+            currentZoom += (targetZoom - currentZoom) * 0.08; // Faster interpolation
+            
+            if (!isHolding) {
+                player.isDashing = false;
+            }
+
+            // Apply gravity
+            if (player.isDashing) {
+                player.dy = 0;
+            } else if (player.mode === 'cube' || player.mode === 'ball') {
+                player.dy += GRAVITY * player.gravity;
+            } else if (player.mode === 'ufo') {
+                player.dy += (GRAVITY * 0.6) * player.gravity; // Lower gravity for UFO
+            } else if (player.mode === 'ship') {
+                if (isHolding) player.dy -= 0.5 * player.gravity;
+                else player.dy += 0.5 * player.gravity;
+                player.dy = Math.max(-7, Math.min(7, player.dy)); // Terminal velocity
+            } else if (player.mode === 'wave') {
+                if (isHolding) player.dy = -Math.abs(player.dx) * player.gravity;
+                else player.dy = Math.abs(player.dx) * player.gravity;
+            }
+            
+            // Save previous position for collision resolution
+            const prevY = player.y;
+            const prevX = player.x;
+
+            // Move player
+            player.x += player.dx;
+            player.y += player.dy;
+            cameraX = player.x - 150; // Keep player towards the left of the screen
+
+            // Update Best Progress
+            const progressPct = Math.floor(Math.max(0, Math.min(1, player.x / (levelEnd || 1))) * 100);
+            if (!isPracticeMode) {
+                if (progressPct > (currentLevel.bestProgress || 0)) {
+                    const newProgress = progressPct - (currentLevel.bestProgress || 0);
+                    const earnedOrbs = newProgress * 5; // 5 Orbs per 1% of new progress
+                    totalOrbs += earnedOrbs;
+                    localStorage.setItem("gd_orbs", totalOrbs);
+
+                    currentLevel.bestProgress = progressPct;
+                    savedProgress[`${currentCategoryIndex}-${currentLevelIndex}`] = progressPct;
+                    localStorage.setItem("gd_progress", JSON.stringify(savedProgress));
+                    checkSkinUnlocks('progress', progressPct);
+                }
+            } else {
+                if (progressPct > (currentLevel.bestPracticeProgress || 0)) {
+                    currentLevel.bestPracticeProgress = progressPct;
+                    savedProgress[`${currentCategoryIndex}-${currentLevelIndex}-practice`] = progressPct;
+                    localStorage.setItem("gd_progress", JSON.stringify(savedProgress));
+                }
+            }
+
+            player.grounded = false;
+
+            // Cube rotation logic (rotates in air, snaps when grounded)
+            if (player.mode === 'cube' && !player.grounded) {
+                player.rotation += 5 * player.gravity;
+            } else if (player.mode === 'ship') {
+                player.rotation = player.dy * 3 * player.gravity; // Tilt ship based on vertical speed
+            } else if (player.mode === 'ufo') {
+                player.rotation = player.dy * 2 * player.gravity; // Slight tilt
+            } else if (player.mode === 'wave') {
+                player.rotation = player.dy * 10 * player.gravity; // Match 45 degree angle visually
+            } else if (player.mode === 'ball') {
+                player.rotation += 8 * (player.gravity === 1 ? 1 : -1);
+            }
+
+            // Check collisions
+            for (let obs of obstacles) {
+                // AABB Collision bounds
+                let hitBox = { x: obs.x, y: obs.y, w: obs.w, h: obs.h };
+                
+                // Make spike hitboxes smaller to be fair
+                if (obs.type === 'spike') {
+                    hitBox = { x: obs.x + 10, y: obs.y + 15, w: obs.w - 20, h: obs.h - 15 };
+                } else if (obs.type === 'halfSpike') {
+                    hitBox = { x: obs.x + 10, y: obs.y + 10, w: obs.w - 20, h: obs.h - 10 };
+                } else if (obs.type === 'spikeDown') {
+                    hitBox = { x: obs.x + 10, y: obs.y, w: obs.w - 20, h: obs.h - 15 };
+                } else if (obs.type === 'halfSpikeDown') {
+                    hitBox = { x: obs.x + 10, y: obs.y, w: obs.w - 20, h: obs.h - 10 };
+                } else if (obs.type === 'orb' || obs.type === 'dashOrb') {
+                    hitBox = { x: obs.x - 15, y: obs.y - 15, w: obs.w + 30, h: obs.h + 30 };
+                }
+
+                // Check intersection
+                if (player.x < hitBox.x + hitBox.w && 
+                    player.x + player.w > hitBox.x && 
+                    player.y < hitBox.y + hitBox.h && 
+                    player.y + player.h > hitBox.y) {
+                    
+                    if (obs.type === 'orb' || obs.type === 'dashOrb') {
+                        // If player has a buffered jump, trigger the orb now!
+                        if ((player.mode === 'cube' || player.mode === 'ball') && !obs.hit && player.jumpBuffered) {
+                            if (obs.type === 'orb') {
+                                player.dy = JUMP_FORCE * player.gravity;
+                                player.grounded = false;
+                                player.isDashing = false;
+                                obs.hit = true;
+                                setTimeout(() => obs.hit = false, 300);
+                                player.jumpBuffered = false; // Consume buffer
+                            } else if (obs.type === 'dashOrb') {
+                                player.isDashing = true;
+                                player.dy = 0;
+                                player.grounded = false;
+                                obs.hit = true;
+                                setTimeout(() => obs.hit = false, 300);
+                                player.jumpBuffered = false; // Consume buffer
+                            }
+                        }
+                        continue;
+                    } else if (obs.type === 'portalShip') {
+                        if (player.mode !== 'ship') {
+                            player.mode = 'ship';
+                            player.w = 45; // 3x width
+                            player.h = 15; // 1x height (1x3 aspect ratio)
+                            player.dy = 0; // Stabilize movement
+                        }
+                        continue;
+                    } else if (obs.type === 'portalUFO') {
+                        if (player.mode !== 'ufo') {
+                            player.mode = 'ufo';
+                            player.w = 40; 
+                            player.h = 24; 
+                            player.dy = 0; 
+                        }
+                        continue;
+                    } else if (obs.type === 'portalWave') {
+                        if (player.mode !== 'wave') {
+                            player.mode = 'wave';
+                            player.w = 20; 
+                            player.h = 20; 
+                            player.dy = 0; 
+                        }
+                        continue;
+                    } else if (obs.type === 'portalBall') {
+                        if (player.mode !== 'ball') {
+                            player.mode = 'ball';
+                            player.w = 30; 
+                            player.h = 30; 
+                        }
+                        continue;
+                    } else if (obs.type === 'portalCube') {
+                        if (player.mode !== 'cube') {
+                            player.mode = 'cube';
+                            player.w = 30; 
+                            player.h = 30; 
+                            player.rotation = Math.round(player.rotation / 90) * 90;
+                        }
+                        continue;
+                    } else if (obs.type === 'portalGravityInvert') {
+                        if (player.gravity !== -1) {
+                            player.gravity = -1;
+                            player.dy = -Math.abs(player.dy) * 0.5; // Slight push to the ceiling
+                        }
+                        continue;
+                    } else if (obs.type === 'portalGravityNormal') {
+                        if (player.gravity !== 1) {
+                            player.gravity = 1;
+                            player.dy = Math.abs(player.dy) * 0.5; // Slight push to the floor
+                        }
+                        continue;
+                    } else if (obs.type === 'pad') {
+                        if (!obs.hit) {
+                            player.y = player.gravity === 1 ? obs.y - player.h : obs.y + obs.h; // Snap above pad to prevent block overrides
+                            player.dy = JUMP_FORCE * 1.8 * player.gravity; // Give a stronger jump than normal
+                            player.grounded = false;
+                            obs.hit = true;
+                            setTimeout(() => obs.hit = false, 300);
+                        }
+                        continue;
+                    } else if (obs.type === 'redPad') {
+                        if (!obs.hit) {
+                            player.y = player.gravity === 1 ? obs.y - player.h : obs.y + obs.h; // Snap above pad to prevent block overrides
+                            player.dy = JUMP_FORCE * 2.2 * player.gravity; // Give an even stronger jump
+                            player.grounded = false;
+                            obs.hit = true;
+                            setTimeout(() => obs.hit = false, 300);
+                        }
+                        continue;
+                    } else if (obs.type === 'coin') {
+                    if (!isPracticeMode && !obs.collected) {
+                            obs.collected = true;
+                            coins++;
+                        }
+                        continue;
+                    } else if (obs.type === 'spike' || obs.type === 'halfSpike' || obs.type === 'spikeDown' || obs.type === 'halfSpikeDown') {
+                        die();
+                        return;
+                    } else if (obs.type === 'block') {
+                        if (player.mode === 'wave') {
+                            die();
+                            return;
+                        }
+                        let landed = false;
+                        let hitCeiling = false;
+                        if (player.gravity === 1) {
+                            if (prevY + player.h <= obs.y) landed = true;
+                            else if (player.mode === 'ship' && prevY >= obs.y + obs.h) hitCeiling = true;
+                        } else {
+                            if (prevY >= obs.y + obs.h) landed = true;
+                            else if (player.mode === 'ship' && prevY + player.h <= obs.y) hitCeiling = true;
+                        }
+                        
+                        if (landed) {
+                            player.isDashing = false;
+                            player.y = player.gravity === 1 ? obs.y - player.h : obs.y + obs.h;
+                            player.dy = 0;
+                            player.grounded = true;
+                            if (player.mode === 'cube') {
+                                player.rotation = Math.round(player.rotation / 90) * 90;
+                                if (player.jumpBuffered) {
+                                    player.dy = JUMP_FORCE * player.gravity;
+                                    player.grounded = false;
+                                    player.jumpBuffered = false;
+                                }
+                            } else if (player.mode === 'ball') {
+                                if (player.jumpBuffered) {
+                                    player.gravity *= -1;
+                                    player.grounded = false;
+                                    player.jumpBuffered = false;
+                                }
+                            }
+                        } else if (hitCeiling) {
+                            player.isDashing = false;
+                            player.y = player.gravity === 1 ? obs.y + obs.h : obs.y - player.h;
+                            player.dy = 0;
+                        } else {
+                            die();
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Check Level End
+            if (player.x > levelEnd) {
+                gameState = "COMPLETE";
+                bgMusic.pause();
+            }
+            
+            // Screen Bounds (Floor & Ceiling)
+            if (player.gravity === 1) {
+                if (player.y > canvas.height - player.h) {
+                    player.isDashing = false;
+                    player.y = canvas.height - player.h;
+                    player.dy = 0;
+                    player.grounded = true;
+                    if (player.mode === 'cube') {
+                        player.rotation = Math.round(player.rotation / 90) * 90;
+                        if (player.jumpBuffered) {
+                            player.dy = JUMP_FORCE * player.gravity;
+                            player.grounded = false;
+                            player.jumpBuffered = false;
+                        }
+                    } else if (player.mode === 'ball') {
+                        if (player.jumpBuffered) {
+                            player.gravity *= -1;
+                            player.grounded = false;
+                            player.jumpBuffered = false;
+                        }
+                    }
+                }
+                if (player.mode === 'ship' && player.y < 0) { player.y = 0; player.dy = 0; }
+            } else {
+                if (player.y < 0) {
+                    player.isDashing = false;
+                    player.y = 0;
+                    player.dy = 0;
+                    player.grounded = true;
+                    if (player.mode === 'cube') {
+                        player.rotation = Math.round(player.rotation / 90) * 90;
+                        if (player.jumpBuffered) {
+                            player.dy = JUMP_FORCE * player.gravity;
+                            player.grounded = false;
+                            player.jumpBuffered = false;
+                        }
+                    } else if (player.mode === 'ball') {
+                        if (player.jumpBuffered) {
+                            player.gravity *= -1;
+                            player.grounded = false;
+                            player.jumpBuffered = false;
+                        }
+                    }
+                }
+                if (player.mode === 'ship' && player.y > canvas.height - player.h) { player.y = canvas.height - player.h; player.dy = 0; }
+            }
+
+            // --- AUTO CHECKPOINT ---
+            if (isPracticeMode && gameState === "PLAYING" && player.grounded) {
+                const lastCpX = checkpoints.length > 0 ? checkpoints[checkpoints.length - 1].x : 0;
+                if (player.x - lastCpX > 500) {
+                    placeCheckpoint();
+                }
+            }
+
+            // --- PARTICLES ---
+            let pX = player.x + player.w / 2;
+            let pY = player.y + player.h / 2;
+            
+            if (player.mode === 'ship') {
+                pX -= 15; // Trail behind the ship
+            } else if (player.mode === 'ufo') {
+                pY += 10 * player.gravity; // Trail from the bottom booster
+            } else if (player.mode === 'wave') {
+                pX -= 10; // Trail behind the wave dart
+            } else if (player.grounded) {
+                pY += 15 * player.gravity; // Trail from the bottom when sliding
+            }
+            
+            const currentSkin = skins.find(s => s.id === equippedSkin) || skins[0];
+            for (let i = 0; i < 2; i++) {
+                particles.push({
+                    x: pX - 4 + (Math.random() * 8 - 4),
+                    y: pY - 4 + (Math.random() * 8 - 4),
+                    size: Math.random() * 4 + 2,
+                    life: 0.8,
+                    decay: Math.random() * 0.04 + 0.02,
+                    color: currentSkin.color
+                });
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].life -= particles[i].decay;
+                if (particles[i].life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        function drawCube(ctx, skin, x, y, size) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.fillStyle = skin.color;
+            ctx.fillRect(-size/2, -size/2, size, size);
+            ctx.strokeStyle = "#fff"; ctx.lineWidth=2; ctx.strokeRect(-size/2, -size/2, size, size);
+            ctx.fillStyle = "#000";
+            if (skin.icon === "angry") {
+                ctx.beginPath(); ctx.moveTo(-size*0.3, -size*0.3); ctx.lineTo(-size*0.1, -size*0.15); ctx.lineTo(size*0.1, -size*0.15); ctx.lineTo(size*0.3, -size*0.3); ctx.stroke();
+                ctx.fillRect(-size*0.2, -size*0.1, size*0.15, size*0.15); ctx.fillRect(size*0.1, -size*0.1, size*0.15, size*0.15);
+            } else if (skin.icon === "ninja") {
+                ctx.fillStyle = "#111"; ctx.fillRect(-size/2, -size*0.2, size, size*0.4);
+                ctx.fillStyle = "#fff"; ctx.fillRect(-size*0.2, -size*0.15, size*0.15, size*0.15); ctx.fillRect(size*0.1, -size*0.15, size*0.15, size*0.15);
+            } else if (skin.icon === "shades") {
+                ctx.fillStyle = "#000"; ctx.fillRect(-size*0.4, -size*0.2, size*0.8, size*0.3);
+                ctx.fillStyle = "#fff"; ctx.fillRect(-size*0.2, -size*0.15, size*0.1, size*0.1); ctx.fillRect(size*0.1, -size*0.15, size*0.1, size*0.1);
+            } else if (skin.icon === "robot") {
+                ctx.fillStyle = "#000"; ctx.fillRect(-size*0.4, -size*0.15, size*0.8, size*0.3);
+                ctx.fillStyle = skin.color; ctx.fillRect(-size*0.2, -size*0.05, size*0.15, size*0.15); ctx.fillRect(size*0.1, -size*0.05, size*0.15, size*0.15);
+            } else {
+                ctx.fillRect(-size*0.15, -size*0.15, size*0.3, size*0.3);
+            }
+            ctx.restore();
+        }
+
+        function drawShip(ctx, skin, x, y, w, h) {
+            ctx.save();
+            ctx.translate(x, y);
+            
+            const sIndex = skin.shipIndex || 0;
+            const img = shipImages[sIndex];
+            
+            if (img && img.complete && img.naturalWidth > 0) {
+                ctx.drawImage(img, -w/2, -h/2 - 5, w, h + 10);
+            } else {
+                // Fallback geometry drawing if image is missing/loading
+                ctx.fillStyle = skin.color;
+                ctx.strokeStyle = "#fff"; ctx.lineWidth = 2;
+                if (skin.icon === "angry") {
+                    ctx.beginPath(); ctx.moveTo(-w/2, -h/2); ctx.lineTo(w/2, 0); ctx.lineTo(-w/2, h/2); ctx.lineTo(-w/4, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#000"; ctx.beginPath(); ctx.moveTo(-w/8, -h/4); ctx.lineTo(w/4, 0); ctx.lineTo(-w/8, h/4); ctx.closePath(); ctx.fill();
+                } else if (skin.icon === "ninja") {
+                    ctx.beginPath(); ctx.moveTo(-w/2, 0); ctx.lineTo(0, -h/2); ctx.lineTo(w/2, 0); ctx.lineTo(0, h/2); ctx.closePath(); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#111"; ctx.fillRect(-w/4, -h/6, w/2, h/3);
+                } else if (skin.icon === "shades") {
+                    ctx.fillRect(-w/2, -h/3, w, h/1.5); ctx.strokeRect(-w/2, -h/3, w, h/1.5);
+                    ctx.fillStyle = "#000"; ctx.fillRect(-w/4, -h/4, w/2, h/2);
+                } else if (skin.icon === "robot") {
+                    ctx.beginPath(); ctx.arc(0, 0, h/1.2, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#000"; ctx.fillRect(-w/4, -h/4, w/2, h/2);
+                } else {
+                    ctx.beginPath(); ctx.moveTo(-w/2, -h/2); ctx.lineTo(w/2, 0); ctx.lineTo(-w/2, h/2); ctx.closePath(); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#000"; ctx.fillRect(-w/4, -h/4, w/3, h/2);
+                }
+            }
+            ctx.restore();
+        }
+
+                function drawUFO(ctx, skin, x, y, w, h) {
+            ctx.save();
+            ctx.translate(x, y);
+            
+            // Dome
+            ctx.fillStyle = "rgba(200, 255, 255, 0.5)";
+            ctx.beginPath(); ctx.arc(0, 0, w/2.5, Math.PI, 0); ctx.fill(); ctx.stroke();
+            
+            // Inside pilot (mini cube)
+            ctx.save(); ctx.scale(0.5, 0.5); drawCube(ctx, skin, 0, -h/2.5, 30); ctx.restore();
+
+            // Base
+            ctx.fillStyle = skin.color;
+            ctx.beginPath(); ctx.ellipse(0, 0, w/2, h/3, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+            
+            // Detail dots
+            ctx.fillStyle = "#fff";
+            ctx.beginPath(); ctx.arc(-w/3, 0, 2, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(0, 0, 2, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(w/3, 0, 2, 0, Math.PI*2); ctx.fill();
+            
+            ctx.restore();
+        }
+
+                function drawWave(ctx, skin, x, y, size) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.fillStyle = skin.color;
+            ctx.strokeStyle = "#fff"; ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(-size/2, -size/2); ctx.lineTo(size/2, 0); ctx.lineTo(-size/2, size/2); ctx.lineTo(-size/4, 0);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            
+            ctx.fillStyle = "#000";
+            ctx.beginPath();
+            ctx.moveTo(-size/4, -size/4); ctx.lineTo(size/4, 0); ctx.lineTo(-size/4, size/4); ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        function drawBall(ctx, skin, x, y, size) {
+            ctx.save();
+            ctx.translate(x, y);
+            
+            ctx.fillStyle = skin.color;
+            ctx.beginPath();
+            ctx.arc(0, 0, size/2, 0, Math.PI*2);
+            ctx.fill();
+            
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = "#000";
+            ctx.beginPath();
+            ctx.arc(0, 0, size/3, 0, Math.PI*2);
+            ctx.fill();
+            
+            ctx.strokeStyle = skin.color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(-size/3, 0); ctx.lineTo(size/3, 0);
+            ctx.moveTo(0, -size/3); ctx.lineTo(0, size/3);
+            ctx.stroke();
+
+            ctx.fillStyle = "#fff";
+            ctx.beginPath();
+            ctx.arc(0, 0, size/8, 0, Math.PI*2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        function drawSpider(ctx, skin, x, y, size) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.fillStyle = skin.color;
+            
+            // Legs
+            ctx.strokeStyle = "#fff"; ctx.lineWidth = 3;
+            ctx.beginPath();
+            // Front/Back legs
+            ctx.moveTo(-size/4, 0); ctx.lineTo(-size*0.7, -size*0.4);
+            ctx.moveTo(-size/4, 0); ctx.lineTo(-size*0.7, size*0.4);
+            ctx.moveTo(size/4, 0); ctx.lineTo(size*0.7, -size*0.4);
+            ctx.moveTo(size/4, 0); ctx.lineTo(size*0.7, size*0.4);
+            ctx.stroke();
+            
+            // Inner leg joints
+            ctx.beginPath();
+            ctx.moveTo(-size/4, 0); ctx.lineTo(-size*0.5, -size*0.1);
+            ctx.moveTo(-size/4, 0); ctx.lineTo(-size*0.5, size*0.1);
+            ctx.moveTo(size/4, 0); ctx.lineTo(size*0.5, -size*0.1);
+            ctx.moveTo(size/4, 0); ctx.lineTo(size*0.5, size*0.1);
+            ctx.stroke();
+            
+            // Body
+            ctx.fillRect(-size/2.5, -size/3, size*0.8, size*0.66);
+            ctx.strokeStyle = "#fff"; ctx.lineWidth=2; ctx.strokeRect(-size/2.5, -size/3, size*0.8, size*0.66);
+            
+            // Face (re-use cube face but slightly squished)
+            ctx.fillStyle = "#000";
+            if (skin.icon === "angry") {
+                ctx.beginPath(); ctx.moveTo(-size*0.2, -size*0.1); ctx.lineTo(-size*0.05, -size*0.05); ctx.lineTo(size*0.05, -size*0.05); ctx.lineTo(size*0.2, -size*0.1); ctx.stroke();
+                ctx.fillRect(-size*0.15, 0, size*0.1, size*0.1); ctx.fillRect(size*0.05, 0, size*0.1, size*0.1);
+            } else if (skin.icon === "ninja") {
+                ctx.fillStyle = "#111"; ctx.fillRect(-size/2.5, -size*0.15, size*0.8, size*0.3);
+                ctx.fillStyle = "#fff"; ctx.fillRect(-size*0.15, -size*0.1, size*0.1, size*0.1); ctx.fillRect(size*0.05, -size*0.1, size*0.1, size*0.1);
+            } else if (skin.icon === "shades") {
+                ctx.fillStyle = "#000"; ctx.fillRect(-size*0.3, -size*0.15, size*0.6, size*0.2);
+                ctx.fillStyle = "#fff"; ctx.fillRect(-size*0.15, -size*0.1, size*0.08, size*0.08); ctx.fillRect(size*0.07, -size*0.1, size*0.08, size*0.08);
+            } else if (skin.icon === "robot") {
+                ctx.fillStyle = "#000"; ctx.fillRect(-size*0.3, -size*0.1, size*0.6, size*0.2);
+                ctx.fillStyle = skin.color; ctx.fillRect(-size*0.15, -size*0.05, size*0.1, size*0.1); ctx.fillRect(size*0.05, -size*0.05, size*0.1, size*0.1);
+            } else {
+                ctx.fillRect(-size*0.15, -size*0.1, size*0.1, size*0.1);
+                ctx.fillRect(size*0.05, -size*0.1, size*0.1, size*0.1);
+            }
+            
+            ctx.restore();
+        }
+
+        // --- RENDERING ---
+        function draw() {
+            const currentLevel = levelCategories[currentCategoryIndex]?.levels[currentLevelIndex] || levelCategories[0].levels[0];
+            
+            // Clear screen & draw background
+            ctx.fillStyle = currentLevel.bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // --- MASTER ZOOM WRAPPER ---
+            ctx.save();
+            
+            // Apply Dynamic Camera Zoom centered on the player's X position and screen center Y
+            ctx.translate(150, canvas.height / 2);
+            if (gameState === "PLAYING" || gameState === "DEAD" || gameState === "PAUSED" || gameState === "COMPLETE") {
+                ctx.scale(currentZoom, currentZoom);
+            }
+            ctx.translate(-150, -canvas.height / 2);
+
+            // --- PARALLAX BACKGROUND ---
+            ctx.save();
+            
+            // Layer 1: Far background grid (moves slowly)
+            const parallaxSpeed1 = 0.2;
+            const gridSize = 60;
+            // Use modulo math to create an infinite scrolling wrap
+            const offsetX1 = ((cameraX * parallaxSpeed1) % gridSize + gridSize) % gridSize;
+            
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            const drawDistParallax = (canvas.width * 1.5) / currentZoom;
+            const heightDistParallax = (canvas.height * 1.5) / currentZoom;
+            for (let x = -offsetX1 - 200; x < drawDistParallax + gridSize; x += gridSize) {
+                ctx.moveTo(x, -heightDistParallax);
+                ctx.lineTo(x, canvas.height + heightDistParallax);
+            }
+            for (let y = -heightDistParallax; y < canvas.height + heightDistParallax; y += gridSize) {
+                ctx.moveTo(-200, y);
+                ctx.lineTo(drawDistParallax, y);
+            }
+            ctx.stroke();
+
+            // Layer 2: Mid background silhouettes (moves slightly faster)
+            const parallaxSpeed2 = 0.5;
+            const shapeSpacing = 300;
+            const offsetX2 = ((cameraX * parallaxSpeed2) % shapeSpacing + shapeSpacing) % shapeSpacing;
+            
+            ctx.fillStyle = currentLevel.blockColor;
+            ctx.globalAlpha = 0.3; // Make it subtly blend with the background
+            for (let x = -offsetX2 - 200; x < drawDistParallax + shapeSpacing; x += shapeSpacing) {
+                ctx.fillRect(x + 50, canvas.height - 180, 120, 180);
+                ctx.fillRect(x + 200, canvas.height - 250, 80, 250);
+            }
+            
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(-cameraX, 0);
+
+            const drawDist = canvas.width / currentZoom;
+            // Draw obstacles
+            for (let obs of obstacles) {
+                // Only draw objects somewhat near the camera for performance
+                if (obs.x < cameraX - TILE_SIZE * 2 || obs.x > cameraX + drawDist + TILE_SIZE * 2) continue;
+
+                if (obs.type === 'block') {
+                    ctx.fillStyle = currentLevel.blockColor;
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+                    
+                    // Pulse effect for blocks
+                    const pulse = Math.abs(Math.sin(Date.now() / 220));
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${0.3 + pulse * 0.7})`;
+                    ctx.lineWidth = 1 + pulse * 3;
+                    ctx.strokeRect(obs.x + pulse, obs.y + pulse, obs.w - pulse * 2, obs.h - pulse * 2);
+                } else if (obs.type === 'spike' || obs.type === 'halfSpike') {
+                    ctx.fillStyle = "#e94560"; // Red spikes
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x + obs.w / 2, obs.y); // Top
+                    ctx.lineTo(obs.x + obs.w, obs.y + obs.h); // Bottom right
+                    ctx.lineTo(obs.x, obs.y + obs.h); // Bottom left
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                } else if (obs.type === 'spikeDown' || obs.type === 'halfSpikeDown') {
+                    ctx.fillStyle = "#e94560"; // Red spikes
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x + obs.w / 2, obs.y + obs.h); // Bottom point
+                    ctx.lineTo(obs.x + obs.w, obs.y); // Top right
+                    ctx.lineTo(obs.x, obs.y); // Top left
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                } else if (obs.type === 'orb' || obs.type === 'dashOrb') {
+                    const isDash = obs.type === 'dashOrb';
+                    ctx.fillStyle = obs.hit ? "#fff" : (isDash ? "#00ff00" : "#f1c40f"); // Green for dash orb, Yellow for standard orb
+                    ctx.beginPath();
+                    ctx.arc(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 2 - 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Draw outer pulsing ring
+                    ctx.beginPath();
+                    ctx.arc(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 2, 0, Math.PI * 2);
+                    ctx.strokeStyle = isDash ? "rgba(0, 255, 0, 0.5)" : "rgba(241, 196, 15, 0.5)";
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                } else if (obs.type === 'portalShip') {
+                    ctx.fillStyle = "rgba(255, 100, 200, 0.4)"; // Pink portal
+                    ctx.beginPath();
+                    ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 3, obs.h / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = "#ff00aa";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                } else if (obs.type === 'portalUFO') {
+                    ctx.fillStyle = "rgba(255, 165, 0, 0.4)"; // Orange portal
+                    ctx.beginPath();
+                    ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 3, obs.h / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = "#ffa500";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                } else if (obs.type === 'portalWave') {
+                    ctx.fillStyle = "rgba(0, 200, 255, 0.4)"; // Cyan portal
+                    ctx.beginPath();
+                    ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 3, obs.h / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = "#00c8ff";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                } else if (obs.type === 'portalBall') {
+                    ctx.fillStyle = "rgba(255, 50, 0, 0.4)"; // Red-Orange portal
+                    ctx.beginPath();
+                    ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 3, obs.h / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = "#ff3200";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                } else if (obs.type === 'portalSpider') {
+                    ctx.fillStyle = "rgba(255, 0, 255, 0.4)"; // Magenta portal
+                    ctx.beginPath();
+                    ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 3, obs.h / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = "#ff00ff";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                } else if (obs.type === 'portalCube') {
+                    ctx.fillStyle = "rgba(0, 255, 170, 0.4)"; // Green portal
+                    ctx.beginPath();
+                    ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 3, obs.h / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = "#00ffaa";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                } else if (obs.type === 'portalGravityInvert') {
+                    ctx.fillStyle = "rgba(255, 255, 0, 0.4)"; // Yellow portal
+                    ctx.beginPath();
+                    ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 3, obs.h / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = "#ffff00";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                } else if (obs.type === 'portalGravityNormal') {
+                    ctx.fillStyle = "rgba(0, 100, 255, 0.4)"; // Blue portal
+                    ctx.beginPath();
+                    ctx.ellipse(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 3, obs.h / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = "#0066ff";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                } else if (obs.type === 'pad') {
+                    ctx.fillStyle = obs.hit ? "#fff" : "#f1c40f"; // Yellow pad
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+                    
+                    // Inner line for detail
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x + 5, obs.y + obs.h / 2);
+                    ctx.lineTo(obs.x + obs.w - 5, obs.y + obs.h / 2);
+                    ctx.strokeStyle = "#000";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                } else if (obs.type === 'redPad') {
+                    ctx.fillStyle = obs.hit ? "#fff" : "#e94560"; // Red pad
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+                    
+                    // Inner line for detail
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x + 5, obs.y + obs.h / 2);
+                    ctx.lineTo(obs.x + obs.w - 5, obs.y + obs.h / 2);
+                    ctx.strokeStyle = "#000";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                } else if (obs.type === 'coin' && !obs.collected) {
+                    ctx.fillStyle = isPracticeMode ? "rgba(255, 221, 0, 0.3)" : "#ffdd00"; // Gold
+                    ctx.beginPath();
+                    ctx.arc(obs.x + obs.w / 2, obs.y + obs.h / 2, obs.w / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = isPracticeMode ? "rgba(255, 255, 255, 0.3)" : "#fff";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Draw an inner 'C'
+                    ctx.fillStyle = isPracticeMode ? "rgba(255, 255, 255, 0.3)" : "#fff";
+                    ctx.font = "bold 14px Arial";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText("C", obs.x + obs.w / 2, obs.y + obs.h / 2);
+                    ctx.textBaseline = "alphabetic"; // Reset baseline
+                }
+            }
+
+            // Draw End Line
+            ctx.strokeStyle = "#00ffcc";
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(levelEnd, 0);
+            ctx.lineTo(levelEnd, canvas.height);
+            ctx.stroke();
+
+            // Draw Checkpoints
+            if (isPracticeMode) {
+                ctx.fillStyle = "rgba(0, 255, 100, 0.6)";
+                for (let cp of checkpoints) {
+                    if (cp.x < cameraX - TILE_SIZE * 2 || cp.x > cameraX + drawDist + TILE_SIZE * 2) continue;
+                    ctx.beginPath();
+                    ctx.moveTo(cp.x + 15, cp.y + 30);
+                    ctx.lineTo(cp.x + 5, cp.y + 15);
+                    ctx.lineTo(cp.x + 15, cp.y);
+                    ctx.lineTo(cp.x + 25, cp.y + 15);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            // Draw Particles
+            for (let p of particles) {
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            }
+            ctx.globalAlpha = 1.0;
+
+            const currentSkin = skins.find(s => s.id === equippedSkin) || skins[0];
+            
+            // Draw Player
+            if (gameState !== "DEAD") {
+                ctx.save();
+                // Move context to center of player to rotate correctly
+                ctx.translate(player.x + player.w / 2, player.y + player.h / 2);
+                ctx.rotate((player.rotation * Math.PI) / 180);
+                ctx.scale(1, player.gravity); // Flips the sprite upside down if gravity is inverted
+                
+                if (player.mode === 'cube') {
+                    drawCube(ctx, currentSkin, 0, 0, player.w);
+                } else if (player.mode === 'ship') {
+                    drawShip(ctx, currentSkin, 0, 0, player.w, player.h);
+                } else if (player.mode === 'ufo') {
+                    drawUFO(ctx, currentSkin, 0, 0, player.w, player.h);
+                } else if (player.mode === 'wave') {
+                    drawWave(ctx, currentSkin, 0, 0, player.w);
+                } else if (player.mode === 'ball') {
+                    drawBall(ctx, currentSkin, 0, 0, player.w);
+                }
+                
+                ctx.restore();
+            } else {
+                // Death explosion particles (simplified as scattered squares)
+                ctx.fillStyle = currentSkin.color;
+                ctx.fillRect(player.x - 10, player.y - 10, 10, 10);
+                ctx.fillRect(player.x + 30, player.y - 15, 8, 8);
+                ctx.fillRect(player.x - 5, player.y + 30, 12, 12);
+                ctx.fillRect(player.x + 25, player.y + 25, 9, 9);
+            }
+
+            ctx.restore();
+            
+            ctx.restore(); // Restore MASTER ZOOM WRAPPER
+
+            // --- UI OVERLAYS ---
+            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+            ctx.font = "20px Arial";
+            ctx.textAlign = "left";
+            
+            if (gameState === "PLAYING" || gameState === "DEAD" || gameState === "PAUSED") {
+                ctx.fillText(currentLevel.name, 20, 30);
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                ctx.fillText(currentLevel.song, 20, 50);
+                ctx.fillText(`Attempt: ${attempts}`, 20, 75);
+
+                if (isPracticeMode) {
+                    ctx.fillStyle = "#00ffcc";
+                    ctx.fillText("Practice Mode (Auto-CP) - Z: Place, X: Remove", 20, 95);
+                }
+
+            // Progress Bar
+            const barWidth = 300;
+            const barHeight = 15;
+            const barX = (canvas.width - barWidth) / 2;
+            const barY = 20;
+            
+            // Calculate percentage complete (clamp between 0 and 1)
+            const progress = Math.max(0, Math.min(1, player.x / (levelEnd || 1)));
+            
+            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            ctx.fillRect(barX, barY, barWidth, barHeight);
+            ctx.fillStyle = "#00ffcc"; 
+            ctx.fillRect(barX, barY, barWidth * progress, barHeight);
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(barX, barY, barWidth, barHeight);
+
+            // Draw Coins in Top Right
+            if (!isPracticeMode) {
+                for (let i = 0; i < 3; i++) {
+                    ctx.beginPath();
+                    ctx.arc(canvas.width - 140 + (i * 30), 30, 10, 0, Math.PI * 2);
+                    if (i < coins) {
+                        ctx.fillStyle = "#ffdd00";
+                        ctx.fill();
+                    }
+                    ctx.strokeStyle = "#ffdd00";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+
+            // Draw Pause Button
+            if (gameState === "PLAYING" || gameState === "PAUSED") {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                ctx.fillRect(canvas.width - 45, 15, 30, 30);
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(canvas.width - 37, 22, 5, 16);
+                ctx.fillRect(canvas.width - 28, 22, 5, 16);
+                ctx.strokeStyle = "#fff";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(canvas.width - 45, 15, 30, 30);
+            }
+            }
+
+            // Game State Overlays
+            ctx.textAlign = "center";
+            if (gameState === "START") {
+                if (menuState === "SHOP") {
+                    if (shopVideoVisible && shopBgVideo.readyState >= 2) {
+                        ctx.drawImage(shopBgVideo, 0, 0, canvas.width, canvas.height);
+                    } else {
+                        ctx.fillStyle = "#000";
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    }
+                } else if (menuState === "SKIN_SELECT" && skinBgImage.complete) {
+                    ctx.drawImage(skinBgImage, 0, 0, canvas.width, canvas.height);
+                }
+                ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#fff";
+                ctx.font = "40px Arial";
+                ctx.fillText("Math Dash", canvas.width / 2, 80);
+                
+                if (menuState === "CATEGORY_SELECT") {
+                    ctx.font = "16px Arial";
+                    ctx.fillText("Select a Category", canvas.width / 2, 115);
+                    
+                    ctx.fillStyle = "#00ffff";
+                    ctx.textAlign = "right";
+                    ctx.font = "20px Arial";
+                    ctx.fillText(`Orbs: ${totalOrbs}`, canvas.width - 20, 41);
+                    ctx.textAlign = "center";
+                
+                    // Draw Category Buttons
+                    levelCategories.forEach((cat, i) => {
+                        const btnX = canvas.width / 2 - 150;
+                        const btnY = 140 + i * 60;
+                        
+                        ctx.fillStyle = "#222";
+                        ctx.fillRect(btnX, btnY, 300, 45);
+                        ctx.strokeStyle = "#00ffcc";
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(btnX, btnY, 300, 45);
+                        
+                        ctx.fillStyle = "#fff";
+                        ctx.font = "20px Arial";
+                        ctx.fillText(cat.name, canvas.width / 2, btnY + 28);
+                    });
+                    
+                    const editorBtnY = 140 + levelCategories.length * 60 + 20;
+                    
+                    // Level Editor Button
+                    ctx.fillStyle = "#ff00aa";
+                    ctx.fillRect(canvas.width / 2 - 150, editorBtnY, 140, 45);
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(canvas.width / 2 - 150, editorBtnY, 140, 45);
+                    ctx.fillStyle = "#fff";
+                    ctx.fillText("🛠️ Editor", canvas.width / 2 - 80, editorBtnY + 28);
+                    
+                    // Skins Button
+                    ctx.fillStyle = "#00ffcc";
+                    ctx.fillRect(canvas.width / 2 + 10, editorBtnY, 140, 45);
+                    ctx.strokeRect(canvas.width / 2 + 10, editorBtnY, 140, 45);
+                    ctx.fillStyle = "#000";
+                    ctx.fillText("🎨 Skins", canvas.width / 2 + 80, editorBtnY + 28);
+                } else if (menuState === "LEVEL_SELECT") {
+                    ctx.font = "16px Arial";
+                    ctx.fillText(levelCategories[currentCategoryIndex].name + " - Select a Level", canvas.width / 2, 115);
+                    
+                    // Draw Back Button
+                    ctx.fillStyle = "#e94560";
+                    ctx.fillRect(20, 20, 80, 30);
+                    ctx.fillStyle = "#fff";
+                    ctx.font = "16px Arial";
+                    ctx.fillText("Back", 60, 41);
+                    
+                    ctx.fillStyle = "#00ffff";
+                    ctx.textAlign = "right";
+                    ctx.font = "20px Arial";
+                    ctx.fillText(`Orbs: ${totalOrbs}`, canvas.width - 20, 41);
+                    ctx.textAlign = "center";
+                
+                    const levels = levelCategories[currentCategoryIndex].levels;
+                    
+                    // Smooth slide animation
+                    const targetScrollX = currentLevelIndex * canvas.width;
+                    menuScrollX += (targetScrollX - menuScrollX) * 0.15;
+                    
+                    ctx.save();
+                    
+                    for (let i = 0; i < levels.length; i++) {
+                        const lvl = levels[i];
+                        const xOffset = i * canvas.width - menuScrollX;
+                        
+                        // Only draw if relatively on-screen
+                        if (Math.abs(xOffset) > canvas.width) continue;
+
+                        // Draw Level Info Box
+                        ctx.fillStyle = "#222";
+                        ctx.fillRect(canvas.width / 2 - 200 + xOffset, 125, 400, 180);
+                        ctx.strokeStyle = "#00ffcc";
+                        ctx.lineWidth = 3;
+                        ctx.strokeRect(canvas.width / 2 - 200 + xOffset, 125, 400, 180);
+                        
+                        ctx.fillStyle = "#fff";
+                        ctx.font = "24px Arial";
+                        ctx.fillText(lvl.name, canvas.width / 2 + xOffset, 160);
+                        
+                        ctx.font = "16px Arial";
+                        ctx.fillStyle = "#aaa";
+                        ctx.fillText("Song: " + (lvl.song || "Unknown"), canvas.width / 2 + xOffset, 185);
+                        
+                        // Normal Mode Progress
+                        const bestProg = lvl.bestProgress || 0;
+                        ctx.font = "14px Arial";
+                        ctx.fillStyle = "#fff";
+                        ctx.fillText(`Normal: ${bestProg}%`, canvas.width / 2 - 85 + xOffset, 210);
+
+                        const progBarWidth = 140;
+                        const progBarX = canvas.width / 2 - 155 + xOffset;
+                        const progBarY = 220;
+                        
+                        ctx.fillStyle = "#111";
+                        ctx.fillRect(progBarX, progBarY, progBarWidth, 10);
+                        ctx.fillStyle = "#00ffcc";
+                        ctx.fillRect(progBarX, progBarY, progBarWidth * (bestProg / 100), 10);
+                        ctx.strokeStyle = "#444";
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(progBarX, progBarY, progBarWidth, 10);
+                        
+                        // Practice Mode Progress
+                        const bestPracProg = lvl.bestPracticeProgress || 0;
+                        ctx.fillStyle = "#fff";
+                        ctx.fillText(`Practice: ${bestPracProg}%`, canvas.width / 2 + 85 + xOffset, 210);
+
+                        const pracBarX = canvas.width / 2 + 15 + xOffset;
+                        
+                        ctx.fillStyle = "#111";
+                        ctx.fillRect(pracBarX, progBarY, progBarWidth, 10);
+                        ctx.fillStyle = "#00ffcc";
+                        ctx.fillRect(pracBarX, progBarY, progBarWidth * (bestPracProg / 100), 10);
+                        ctx.strokeStyle = "#444";
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(pracBarX, progBarY, progBarWidth, 10);
+                        
+                        // Draw Play Button
+                        const playBtnX = canvas.width / 2 - 160 + xOffset;
+                        const playBtnY = 245;
+                        ctx.fillStyle = "#00ffcc";
+                        ctx.fillRect(playBtnX, playBtnY, 150, 40);
+                        ctx.fillStyle = "#000";
+                        ctx.font = "bold 20px Arial";
+                        ctx.fillText("PLAY", canvas.width / 2 - 85 + xOffset, playBtnY + 27);
+                        
+                        // Draw Practice Button
+                        const pracBtnX = canvas.width / 2 + 10 + xOffset;
+                        ctx.fillStyle = "#00ffcc";
+                        ctx.fillRect(pracBtnX, playBtnY, 150, 40);
+                        ctx.fillStyle = "#000";
+                        ctx.font = "bold 20px Arial";
+                        ctx.fillText("PRACTICE", canvas.width / 2 + 85 + xOffset, playBtnY + 27);
+                    }
+                    
+                    ctx.restore();
+
+                    // Draw Left Arrow (drawn over the sliding boxes)
+                    if (levels.length > 1) {
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+                        ctx.fillRect(50, 180, 50, 70);
+                        ctx.fillStyle = "#fff";
+                        ctx.font = "30px Arial";
+                        ctx.fillText("<", 75, 225);
+                        
+                        // Draw Right Arrow
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+                        ctx.fillRect(canvas.width - 100, 180, 50, 70);
+                        ctx.fillStyle = "#fff";
+                        ctx.fillText(">", canvas.width - 75, 225);
+                    }
+                } else if (menuState === "SKIN_SELECT") {
+                    ctx.font = "16px Arial";
+                    ctx.fillText("Select a Skin", canvas.width / 2, 115);
+                    
+                    ctx.fillStyle = "#e94560";
+                    ctx.fillRect(20, 20, 80, 30);
+                    ctx.fillStyle = "#fff";
+                    ctx.font = "16px Arial";
+                    ctx.fillText("Back", 60, 41);
+                    
+                    ctx.fillStyle = "#00ffff";
+                    ctx.textAlign = "right";
+                    ctx.font = "20px Arial";
+                    ctx.fillText(`Orbs: ${totalOrbs}`, canvas.width - 150, 41); // slightly offset because of Shop button
+                    ctx.textAlign = "center";
+                
+                    const shopBtnX = canvas.width - 140;
+                    const shopBtnY = 20;
+                    ctx.fillStyle = "#ffaa00"; ctx.fillRect(shopBtnX, shopBtnY, 120, 40);
+                    ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.strokeRect(shopBtnX, shopBtnY, 120, 40);
+                    ctx.fillStyle = "#000"; ctx.font = "bold 16px Arial"; ctx.fillText("The Shop", shopBtnX + 60, shopBtnY + 26);
+                    
+                    const displayIndex = hoveredSkinIndex !== -1 ? hoveredSkinIndex : currentSkinIndex;
+                    const displaySkin = skins[displayIndex];
+                    if (!displaySkin) return;
+                    const isUnlocked = unlockedSkins.includes(displaySkin.id);
+
+                    // Draw Grid with pagination
+                    for (let i = 0; i < skins.length; i++) {
+                        if (i < skinPage * 12 || i >= (skinPage + 1) * 12) continue;
+                        const idxOnPage = i % 12;
+                        const skin = skins[i];
+                        const col = idxOnPage % 4;
+                        const row = Math.floor(idxOnPage / 4);
+                        const boxX = 80 + col * 70;
+                        const boxY = 140 + row * 70;
+
+                        ctx.fillStyle = (i === currentSkinIndex) ? "#333" : "#222";
+                        ctx.fillRect(boxX, boxY, 50, 50);
+
+                        if (equippedSkin === skin.id) {
+                            ctx.strokeStyle = "#00ffaa";
+                            ctx.lineWidth = 3;
+                        } else if (i === currentSkinIndex || i === hoveredSkinIndex) {
+                            ctx.strokeStyle = "#fff";
+                            ctx.lineWidth = 2;
+                        } else {
+                            ctx.strokeStyle = "#00ffcc";
+                            ctx.lineWidth = 2;
+                        }
+                        ctx.strokeRect(boxX, boxY, 50, 50);
+
+                        ctx.save();
+                        ctx.translate(boxX + 25, boxY + 25);
+                        if (!unlockedSkins.includes(skin.id)) ctx.filter = "brightness(0.3)";
+                        drawCube(ctx, skin, 0, 0, 25);
+                        ctx.restore();
+                    }
+                    
+                    if (skins.length > 12) {
+                        ctx.fillStyle = skinPage > 0 ? "rgba(0, 255, 204, 0.8)" : "rgba(68, 68, 68, 0.8)";
+                        ctx.fillRect(30, 210, 30, 40);
+                        ctx.fillStyle = "#000"; ctx.font = "20px Arial"; ctx.fillText("<", 45, 238);
+
+                        ctx.fillStyle = skinPage < Math.ceil(skins.length/12) - 1 ? "rgba(0, 255, 204, 0.8)" : "rgba(68, 68, 68, 0.8)";
+                        ctx.fillRect(360, 210, 30, 40);
+                        ctx.fillStyle = "#000"; ctx.fillText(">", 375, 238);
+                        
+                        ctx.fillStyle = "#fff"; ctx.font = "14px Arial";
+                        ctx.fillText(`Page ${skinPage + 1} / ${Math.ceil(skins.length/12)}`, 210, 370);
+                    }
+
+                    // Draw Detail Panel
+                    const panelX = 420;
+                    const panelY = 130;
+                    ctx.fillStyle = "#222";
+                    ctx.fillRect(panelX, panelY, 300, 240);
+                    ctx.strokeStyle = "#00ffcc";
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(panelX, panelY, 300, 240);
+
+                    ctx.fillStyle = "#fff";
+                    ctx.font = "24px Arial";
+                    ctx.fillText(displaySkin.name, panelX + 150, panelY + 35);
+
+                    ctx.save();
+                    ctx.translate(panelX + 150, panelY + 100);
+                    if (!isUnlocked) ctx.filter = "brightness(0.3)";
+                    drawCube(ctx, displaySkin, -35, 0, 45);
+                    drawShip(ctx, displaySkin, 35, 0, 55, 20);
+                    ctx.restore();
+
+                    ctx.fillStyle = isUnlocked ? "#00ffaa" : "#aaa";
+                    ctx.font = "14px Arial";
+                    ctx.fillText(isUnlocked ? "Unlocked!" : displaySkin.conditionText, panelX + 150, panelY + 170);
+
+                    const btnX = panelX + 35;
+                    const btnY = panelY + 190;
+                    if (equippedSkin === displaySkin.id) {
+                        ctx.fillStyle = "#00ffaa"; ctx.fillRect(btnX, btnY, 230, 40);
+                        ctx.fillStyle = "#000"; ctx.font = "bold 18px Arial"; ctx.fillText("EQUIPPED", panelX + 150, btnY + 26);
+                    } else if (isUnlocked) {
+                        ctx.fillStyle = "#00ffcc"; ctx.fillRect(btnX, btnY, 230, 40);
+                        ctx.fillStyle = "#000"; ctx.font = "bold 18px Arial"; ctx.fillText("EQUIP", panelX + 150, btnY + 26);
+                    } else {
+                        ctx.fillStyle = "#444"; ctx.fillRect(btnX, btnY, 230, 40);
+                        ctx.fillStyle = "#aaa"; ctx.font = "bold 16px Arial"; ctx.fillText("LOCKED", panelX + 150, btnY + 26);
+                    }
+                } else if (menuState === "SHOP") {
+                    ctx.font = "16px Arial";
+                    ctx.fillText("The Shop - Spend your Orbs!", canvas.width / 2, 115);
+                    
+                    ctx.fillStyle = "#e94560";
+                    ctx.fillRect(20, 20, 80, 30);
+                    ctx.fillStyle = "#fff";
+                    ctx.font = "16px Arial";
+                    ctx.fillText("Back", 60, 41);
+
+                    ctx.fillStyle = "#00ffff";
+                    ctx.textAlign = "right";
+                    ctx.font = "20px Arial";
+                    ctx.fillText(`Orbs: ${totalOrbs}`, canvas.width - 20, 41);
+                    ctx.textAlign = "center";
+                    
+                    const shopSkins = skins.filter(s => s.cost);
+                    if (shopSkins.length === 0) return;
+
+                    const displayIndex = hoveredShopIndex !== -1 ? hoveredShopIndex : currentShopIndex;
+                    if (displayIndex < 0 || displayIndex >= shopSkins.length) return;
+                    const displaySkin = shopSkins[displayIndex];
+                    const isUnlocked = unlockedSkins.includes(displaySkin.id);
+
+                    // Draw Grid with pagination
+                    for (let i = 0; i < shopSkins.length; i++) {
+                        if (i < shopPage * 12 || i >= (shopPage + 1) * 12) continue;
+                        const idxOnPage = i % 12;
+                        const skin = shopSkins[i];
+                        const col = idxOnPage % 4;
+                        const row = Math.floor(idxOnPage / 4);
+                        const boxX = 80 + col * 70;
+                        const boxY = 140 + row * 70;
+
+                        ctx.fillStyle = (i === currentShopIndex) ? "#333" : "#222";
+                        ctx.fillRect(boxX, boxY, 50, 50);
+
+                        if (equippedSkin === skin.id) {
+                            ctx.strokeStyle = "#00ffaa";
+                            ctx.lineWidth = 3;
+                        } else if (i === currentShopIndex || i === hoveredShopIndex) {
+                            ctx.strokeStyle = "#fff";
+                            ctx.lineWidth = 2;
+                        } else {
+                            ctx.strokeStyle = "#00ffcc";
+                            ctx.lineWidth = 2;
+                        }
+                        ctx.strokeRect(boxX, boxY, 50, 50);
+
+                        ctx.save();
+                        ctx.translate(boxX + 25, boxY + 25);
+                        if (!unlockedSkins.includes(skin.id)) ctx.filter = "brightness(0.3)";
+                        drawCube(ctx, skin, 0, 0, 25);
+                        ctx.restore();
+                    }
+
+                    if (shopSkins.length > 12) {
+                        ctx.fillStyle = shopPage > 0 ? "rgba(0, 255, 204, 0.8)" : "rgba(68, 68, 68, 0.8)";
+                        ctx.fillRect(30, 210, 30, 40);
+                        ctx.fillStyle = "#000"; ctx.font = "20px Arial"; ctx.fillText("<", 45, 238);
+
+                        ctx.fillStyle = shopPage < Math.ceil(shopSkins.length/12) - 1 ? "rgba(0, 255, 204, 0.8)" : "rgba(68, 68, 68, 0.8)";
+                        ctx.fillRect(360, 210, 30, 40);
+                        ctx.fillStyle = "#000"; ctx.fillText(">", 375, 238);
+                        
+                        ctx.fillStyle = "#fff"; ctx.font = "14px Arial";
+                        ctx.fillText(`Page ${shopPage + 1} / ${Math.ceil(shopSkins.length/12)}`, 210, 370);
+                    }
+
+                    // Draw Detail Panel
+                    const panelX = 420;
+                    const panelY = 130;
+                    ctx.fillStyle = "#222";
+                    ctx.fillRect(panelX, panelY, 300, 240);
+                    ctx.strokeStyle = "#00ffcc";
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(panelX, panelY, 300, 240);
+
+                    ctx.fillStyle = "#fff";
+                    ctx.font = "24px Arial";
+                    ctx.fillText(displaySkin.name, panelX + 150, panelY + 35);
+
+                    ctx.save();
+                    ctx.translate(panelX + 150, panelY + 100);
+                    if (!isUnlocked) ctx.filter = "brightness(0.3)";
+                    drawCube(ctx, displaySkin, -35, 0, 45);
+                    drawShip(ctx, displaySkin, 35, 0, 55, 20);
+                    ctx.restore();
+
+                    ctx.fillStyle = isUnlocked ? "#00ffaa" : "#00ffff";
+                    ctx.font = "14px Arial";
+                    ctx.fillText(isUnlocked ? "Purchased!" : `Cost: ${displaySkin.cost} Orbs`, panelX + 150, panelY + 170);
+
+                    const btnX = panelX + 35;
+                    const btnY = panelY + 190;
+                    if (equippedSkin === displaySkin.id) {
+                        ctx.fillStyle = "#00ffaa"; ctx.fillRect(btnX, btnY, 230, 40);
+                        ctx.fillStyle = "#000"; ctx.font = "bold 18px Arial"; ctx.fillText("EQUIPPED", panelX + 150, btnY + 26);
+                    } else if (isUnlocked) {
+                        ctx.fillStyle = "#00ffcc"; ctx.fillRect(btnX, btnY, 230, 40);
+                        ctx.fillStyle = "#000"; ctx.font = "bold 18px Arial"; ctx.fillText("EQUIP", panelX + 150, btnY + 26);
+                    } else if (totalOrbs >= displaySkin.cost) {
+                        ctx.fillStyle = "#00ffff"; ctx.fillRect(btnX, btnY, 230, 40);
+                        ctx.fillStyle = "#000"; ctx.font = "bold 18px Arial"; ctx.fillText("BUY", panelX + 150, btnY + 26);
+                    } else {
+                        ctx.fillStyle = "#444"; ctx.fillRect(btnX, btnY, 230, 40);
+                        ctx.fillStyle = "#aaa"; ctx.font = "bold 16px Arial"; ctx.fillText("NOT ENOUGH ORBS", panelX + 150, btnY + 26);
+                    }
+                }
+            } else if (gameState === "PAUSED") {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#00ffcc";
+                ctx.font = "40px Arial";
+                ctx.fillText("PAUSED", canvas.width / 2, 100);
+                
+                const btnWidth = 200;
+                const btnHeight = 45;
+                const startX = canvas.width / 2 - btnWidth / 2;
+                
+                // Continue Button
+                ctx.fillStyle = "#222";
+                ctx.fillRect(startX, 150, btnWidth, btnHeight);
+                ctx.strokeStyle = "#00ffcc";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(startX, 150, btnWidth, btnHeight);
+                ctx.fillStyle = "#fff";
+                ctx.font = "20px Arial";
+                ctx.fillText("Continue", canvas.width / 2, 150 + 28);
+                
+                // Practice Mode Button
+                ctx.fillStyle = "#222";
+                ctx.fillRect(startX, 210, btnWidth, btnHeight);
+                ctx.strokeRect(startX, 210, btnWidth, btnHeight);
+                ctx.fillStyle = "#fff";
+                ctx.fillText(isPracticeMode ? "Normal Mode" : "Practice Mode", canvas.width / 2, 210 + 28);
+                
+                const isCustom = levelCategories[currentCategoryIndex].levels[currentLevelIndex].isUserCreated;
+                if (isCustom) {
+                    // Edit Level
+                    ctx.fillStyle = "#222"; ctx.fillRect(startX, 270, btnWidth, btnHeight);
+                    ctx.strokeRect(startX, 270, btnWidth, btnHeight);
+                    ctx.fillStyle = "#ff00aa"; ctx.fillText("Edit Level", canvas.width / 2, 270 + 28);
+                    
+                    // Leave
+                    ctx.fillStyle = "#222"; ctx.fillRect(startX, 330, btnWidth, btnHeight);
+                    ctx.strokeRect(startX, 330, btnWidth, btnHeight);
+                    ctx.fillStyle = "#e94560"; ctx.fillText("Leave", canvas.width / 2, 330 + 28);
+                } else {
+                    // Leave Button
+                    ctx.fillStyle = "#222";
+                    ctx.fillRect(startX, 270, btnWidth, btnHeight);
+                    ctx.strokeRect(startX, 270, btnWidth, btnHeight);
+                    ctx.fillStyle = "#e94560";
+                    ctx.fillText("Leave", canvas.width / 2, 270 + 28);
+                }
+            } else if (gameState === "EDITOR") {
+                ctx.fillStyle = "#1a1a2e";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.save();
+                ctx.translate(-editorCameraX, 0);
+                
+                // Draw grid lines
+                ctx.strokeStyle = "rgba(255,255,255,0.1)";
+                ctx.lineWidth = 1;
+                for(let r=1; r<=10; r++) {
+                    ctx.beginPath(); ctx.moveTo(editorCameraX, r*TILE_SIZE); ctx.lineTo(editorCameraX+canvas.width, r*TILE_SIZE); ctx.stroke();
+                }
+                const startCol = Math.floor(editorCameraX/TILE_SIZE);
+                for(let c=startCol; c<=startCol+25; c++) {
+                    ctx.beginPath(); ctx.moveTo(c*TILE_SIZE, 40); ctx.lineTo(c*TILE_SIZE, 400); ctx.stroke();
+                }
+
+                // Draw placed blocks
+                for (let row = 0; row < 10; row++) {
+                    for (let col = startCol; col <= startCol+25; col++) {
+                        if (col >= editorLayout[row].length) continue;
+                        let char = editorLayout[row][col];
+                        let x = col * TILE_SIZE;
+                        let y = row * TILE_SIZE;
+                        
+                        if (char === 'X') {
+                            ctx.fillStyle = "#0f3460"; ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+                            ctx.strokeStyle = "#fff"; ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
+                        } else if (char === '^') {
+                            ctx.fillStyle = "#e94560";
+                            ctx.beginPath(); ctx.moveTo(x+TILE_SIZE/2, y); ctx.lineTo(x+TILE_SIZE, y+TILE_SIZE); ctx.lineTo(x, y+TILE_SIZE); ctx.fill(); ctx.stroke();
+                        } else if (char === 'O') {
+                            ctx.fillStyle = "#f1c40f";
+                            ctx.beginPath(); ctx.arc(x+TILE_SIZE/2, y+TILE_SIZE/2, TILE_SIZE/2-5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                        } else if (char === 'D') {
+                            ctx.fillStyle = "#00ff00";
+                            ctx.beginPath(); ctx.arc(x+TILE_SIZE/2, y+TILE_SIZE/2, TILE_SIZE/2-5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                        } else if (char === 'P') {
+                            ctx.fillStyle = "#f1c40f"; ctx.fillRect(x, y+TILE_SIZE*0.75, TILE_SIZE, TILE_SIZE*0.25); ctx.strokeRect(x, y+TILE_SIZE*0.75, TILE_SIZE, TILE_SIZE*0.25);
+                        } else if (char === '>') {
+                            ctx.fillStyle = "rgba(255,100,200,0.4)"; ctx.beginPath(); ctx.ellipse(x+TILE_SIZE/2, y+TILE_SIZE/2, TILE_SIZE/3, TILE_SIZE/2, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                        } else if (char === 'U') {
+                            ctx.fillStyle = "rgba(255,165,0,0.4)"; ctx.beginPath(); ctx.ellipse(x+TILE_SIZE/2, y+TILE_SIZE/2, TILE_SIZE/3, TILE_SIZE/2, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                        } else if (char === 'W') {
+                            ctx.fillStyle = "rgba(0,200,255,0.4)"; ctx.beginPath(); ctx.ellipse(x+TILE_SIZE/2, y+TILE_SIZE/2, TILE_SIZE/3, TILE_SIZE/2, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                        } else if (char === 'Q') {
+                            ctx.fillStyle = "rgba(255,50,0,0.4)"; ctx.beginPath(); ctx.ellipse(x+TILE_SIZE/2, y+TILE_SIZE/2, TILE_SIZE/3, TILE_SIZE/2, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                        } else if (char === '<') {
+                            ctx.fillStyle = "rgba(0,255,170,0.4)"; ctx.beginPath(); ctx.ellipse(x+TILE_SIZE/2, y+TILE_SIZE/2, TILE_SIZE/3, TILE_SIZE/2, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                        } else if (char === '@') {
+                            ctx.strokeStyle = "#00ffcc"; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x+TILE_SIZE/2, 0); ctx.lineTo(x+TILE_SIZE/2, 400); ctx.stroke();
+                        }
+                    }
+                }
+                ctx.restore();
+
+                // Draw UI Top Bar
+                ctx.fillStyle = "#222";
+                ctx.fillRect(0, 0, canvas.width, 40);
+                
+                // Save Play
+                ctx.fillStyle = "#00ffcc"; ctx.fillRect(10, 5, 100, 30);
+                ctx.fillStyle = "#000"; ctx.font = "bold 14px Arial"; ctx.fillText("Save & Play", 60, 25);
+                
+                // Exit
+                ctx.fillStyle = "#e94560"; ctx.fillRect(120, 5, 60, 30);
+                ctx.fillStyle = "#fff"; ctx.fillText("Exit", 150, 25);
+                
+                // Brushes
+                brushes.forEach((b, i) => {
+                    ctx.fillStyle = i === currentBrushIndex ? "#00ffcc" : "#444";
+                    ctx.fillRect(200 + i * 40, 5, 30, 30);
+                    ctx.fillStyle = i === currentBrushIndex ? "#000" : "#fff";
+                    ctx.font = "16px Arial";
+                    ctx.fillText(b.char, 215 + i * 40, 25);
+                });
+                
+                ctx.fillStyle = "#fff";
+                ctx.textAlign = "left";
+                ctx.fillText("Brush: " + brushes[currentBrushIndex].name + " (Use A/D to Pan)", 200 + brushes.length * 40 + 10, 25);
+            } else if (gameState === "COMPLETE") {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#00ffcc";
+                ctx.font = "40px Arial";
+                ctx.fillText("LEVEL COMPLETE!", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillStyle = "#fff";
+                ctx.font = "20px Arial";
+                ctx.fillText(`Attempts: ${attempts}`, canvas.width / 2, canvas.height / 2 + 20);
+            if (attemptOrbs > 0) {
+                ctx.fillStyle = "#00ffff";
+                ctx.fillText(`+${attemptOrbs} Orbs!`, canvas.width / 2, canvas.height / 2 + 50);
+                ctx.fillStyle = "#aaa";
+                ctx.fillText("Click or Press Space to Return to Menu", canvas.width / 2, canvas.height / 2 + 90);
+            } else {
+                ctx.fillStyle = "#aaa";
+                ctx.fillText("Click or Press Space to Return to Menu", canvas.width / 2, canvas.height / 2 + 60);
+            }
+            } else if (gameState === "ALL_CLEAR") {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#ffcc00";
+                ctx.font = "40px Arial";
+                ctx.fillText("YOU BEAT THE GAME!", canvas.width / 2, canvas.height / 2);
+            }
+
+            // Draw Skin Unlock Popup overlay
+            if (skinUnlockPopup) {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = "#fff";
+                ctx.font = "30px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("NEW SKIN UNLOCKED!", canvas.width / 2, 100);
+                
+                ctx.fillStyle = skinUnlockPopup.color;
+                ctx.font = "24px Arial";
+                ctx.fillText(skinUnlockPopup.name, canvas.width / 2, 140);
+                
+                ctx.save();
+                ctx.translate(canvas.width / 2, 190);
+                ctx.scale(1.5, 1.5);
+                ctx.fillStyle = skinUnlockPopup.color;
+                ctx.fillRect(-20, -20, 40, 40);
+                ctx.strokeStyle = "#fff"; ctx.lineWidth=2; ctx.strokeRect(-20,-20,40,40);
+                ctx.fillStyle = "#000";
+                if (skinUnlockPopup.icon === "angry") {
+                    ctx.beginPath(); ctx.moveTo(-10, -10); ctx.lineTo(-3, -5); ctx.lineTo(3, -5); ctx.lineTo(10, -10); ctx.stroke();
+                    ctx.fillRect(-8, -3, 5, 5); ctx.fillRect(3, -3, 5, 5);
+                } else if (skinUnlockPopup.icon === "ninja") {
+                    ctx.fillStyle = "#111"; ctx.fillRect(-20, -8, 40, 16);
+                    ctx.fillStyle = "#fff"; ctx.fillRect(-8, -5, 5, 5); ctx.fillRect(3, -5, 5, 5);
+                } else if (skinUnlockPopup.icon === "shades") {
+                    ctx.fillStyle = "#000"; ctx.fillRect(-12, -8, 24, 10);
+                    ctx.fillStyle = "#fff"; ctx.fillRect(-8, -5, 3, 3); ctx.fillRect(5, -5, 3, 3);
+                } else if (skinUnlockPopup.icon === "robot") {
+                    ctx.fillStyle = "#000"; ctx.fillRect(-12, -6, 24, 12);
+                    ctx.fillStyle = skinUnlockPopup.color; ctx.fillRect(-8, -3, 5, 5); ctx.fillRect(3, -3, 5, 5);
+                } else {
+                    ctx.fillRect(-7, -7, 14, 14);
+                }
+                ctx.restore();
+                
+                ctx.fillStyle = "#00ffaa";
+                ctx.fillRect(canvas.width/2 - 110, 250, 100, 40);
+                ctx.fillStyle = "#000"; ctx.font = "bold 16px Arial";
+                ctx.fillText("Equip", canvas.width/2 - 60, 276);
+                
+                ctx.fillStyle = "#e94560";
+                ctx.fillRect(canvas.width/2 + 10, 250, 100, 40);
+                ctx.fillStyle = "#fff";
+                ctx.fillText("Keep Current", canvas.width/2 + 60, 276);
+            }
+        }
+
+        // --- MAIN GAME LOOP ---
+        function gameLoop() {
+            if (!skinUnlockPopup && newUnlockedSkinQueue.length > 0 && gameState !== "PLAYING" && gameState !== "EDITOR") {
+                skinUnlockPopup = newUnlockedSkinQueue.shift();
+            }
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Initialize and start loop
+        loadLevel(0, 0);
+        // returnToMenu() is called from the startBtn click handler to bypass autoplay restrictions
+        gameLoop();
+    </script>
+</body>
+</html>

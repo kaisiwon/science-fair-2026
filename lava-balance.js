@@ -182,7 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Every 5 seconds, set a new target angle for the bowl to tilt towards.
         setInterval(() => {
             if (!isGameOver) {
-                const randomAngleDegrees = Math.random() * 120 - 60; // -60 to +60 degrees for more extreme tilts
+                const randomAngleDegrees = Math.random() * 720 - 360
+            ; // -60 to +60 degrees for more extreme tilts
                 targetAngle = randomAngleDegrees * (Math.PI / 180);
             }
         }, 2500); // Choose a new angle every 2.5 seconds instead of 5
