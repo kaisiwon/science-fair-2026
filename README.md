@@ -7,6 +7,10 @@ This project is built as a **Progressive Web App (PWA)**, ensuring it is:
 *   **Installable:** Can be added to the home screen for an app-like experience.
 *   **Offline Capable:** Core gameplay will be available even with intermittent network connectivity.
 
+This project explores how different gamification mechanics—ranging from casual visual puzzles to real-time physics simulations—impact player engagement and math learning across various age groups.
+
+The project is hosted live on GitHub Pages: [kaisiwon.github.io/science-fair-2026](https://github.io)
+
 ---
 
 ## How to Use the Site
@@ -28,28 +32,84 @@ If you just want to jump in and play, click the "Play as Guest" button. Your sco
 
 ## How to Play the Games
 
-### 1. Number Forge (The Crafting Rogue-lite)
-*   **Math Focus:** Pre-Algebra, Order of Operations (PEMDAS/BODMAS).
-*   **Goal:** Use the number cards in your hand and the available operators to create a mathematical expression that equals the target number.
-*   **How to Play:**
-    *   Click on number cards and operator cards to build your equation in the display.
-    *   You must alternate between numbers and operators.
-    *   Use the "DEL" button to remove the last part of your expression.
-    *   When your equation is ready, hit "Submit". If you're correct, you'll score points and move to the next puzzle!
+---
 
-### 2. Lava Balance (The Physics Challenge)
-*   **Math Focus:** Angles, Physics Simulation, and Reaction Time.
-*   **Goal:** Survive as long as you can without spilling the lava!
-*   **How to Play:**
-    *   The bowl will start to tilt in a random direction.
-    *   In the input box, type an angle (in degrees) to rotate the bowl and counteract the tilt.
-    *   Press Enter or click "Correct" to apply your angle adjustment.
-    *   The longer you survive, the higher your score.
+## 🎮 Game Catalogue & How to Play
 
-### 3. Market Tycoon (The Simulation Game)
-*   **Math Focus:** Statistics, Probability, Percentages, and Graph Literacy.
-*   **Goal:** Maximize your net worth by buying low and selling high.
-*   **How to Play:**
-    *   Use the "Buy" and "Sell" buttons to trade resources. Watch the price chart to spot trends.
-    *   Click "Next Day" to advance time. Prices will change, and random market events may occur.
-    *   You can borrow money if you need extra cash, but be careful! You have to pay interest, and going too far into debt can lead to bankruptcy.
+### 1. Pizza Fraction Parlour
+* **Math Focus:** Visual Fractions & Proportions
+* **Gameplay Style:** Casual Drag-and-Drop
+* **How to Play:** Customers enter your shop and order specific fractional amounts of pizza (e.g., $\frac{3}{4}$ cheese, $\frac{1}{2}$ pepperoni). Drag the correct pre-cut slices onto the serving tray to fulfill the order. Build up speed combos to maximize your score before time runs out.
+
+### 2. Balance Island
+* **Math Focus:** Weight Equivalence & Basic Equations
+* **Gameplay Style:** Physics-Based Puzzle
+* **How to Play:** You are presented with a tilting seesaw. Quirky animals of varying weights appear on screen. Click and place animals on either side of the scale to balance it perfectly. Visual physics cues help you determine values without heavy text reading.
+
+### 3. Merge Matrix
+* **Math Focus:** Grid-Based Addition & Factor Modifiers
+* **Gameplay Style:** 2048-Inspired Puzzle
+* **How to Play:** Use your arrow keys or swipe to slide numbered tiles across a grid. When two identical numbers hit each other, they merge and add together. Special "Operator" tiles (like $+1$ or $\times 2$) occasionally spawn, altering the values of entire rows they pass through.
+
+### 4. Number Forge (The Crafting Rogue-lite)
+* **Math Focus:** Pre-Algebra & Order of Operations (PEMDAS/BODMAS)
+* **Gameplay Style:** Turn-Based Card Strategy
+* **How to Play:** Click on the number and operator cards in your hand to construct a mathematical expression matching the target blueprint number. You must strictly alternate between numbers and operators. Use the `DEL` button to clear mistakes, and hit `Submit` when your equation balances.
+
+### 5. Equation Dungeon
+* **Math Focus:** Mental Arithmetic & Processing Speed
+* **Gameplay Style:** Turn-Based RPG Solver
+* **How to Play:** Navigate a dark dungeon encountering fantasy monsters. Enemy health bars are displayed as math problems. Type the correct answer to launch an attack. Answering quickly triggers critical hit damage, while slower inputs let the monster strike back.
+
+### 6. Number Nomad
+* **Math Focus:** Multiples, Factors, and Sign Changes
+* **Gameplay Style:** Real-Time Infinite Runner
+* **How to Play:** Your character runs forward automatically. Barriers blocking your path are marked with numbers, and your character holds a target score. Use the arrow keys to jump onto platforms containing factors or multiples that adjust your score to match the obstacle's threshold.
+
+### 7. Cipher Heist
+* **Math Focus:** Variable Isolation & Algebraic Inequalities
+* **Gameplay Style:** Linear Logical Puzzle
+* **How to Play:** Bypass a high-security vault system by solving cryptographic puzzles. Isolate the variable $x$ in algebra problems to cut laser wires, crack code matrices by completing abstract number patterns, and balance complex inequality equations before the security countdown triggers.
+
+### 8. Lava Balance (The Physics Challenge)
+* **Math Focus:** Angular Geometry & Reactive Trigonometry
+* **Gameplay Style:** Real-Time Simulation
+* **How to Play:** A bowl filled with molten lava sits on a platform that randomly tilts out of balance. Watch the real-time angle display. Type the exact geometric degree adjustment into the command field and press `Enter` to counteract the drift. Survive as long as possible without spilling!
+
+### 9. Fraction Farmer
+* **Math Focus:** Common Denominators & Ratio Scaling
+* **Gameplay Style:** Resource Management Strategy
+* **How to Play:** Manage a grid-based farm where crops require specific fractional amounts of water and soil. To water fields efficiently, you must find common denominators between different watering cans. Trade harvested crops at the town market using ratio conversion tables to earn profit.
+
+### 10. Market Tycoon (The Simulation Game)
+* **Math Focus:** Statistics, Data Literacy, and Percentages
+* **Gameplay Style:** Menu-Driven Economic Sim
+* **How to Play:** Buy and sell resources across a fluctuating marketplace using menu buttons. Read live line graphs to spot pricing trends. Reinvest cash into stock portfolios or borrow money from banks, balancing compound interest rates and running percentage discounts to avoid bankruptcy.
+
+### 11. Vector Voyage
+* **Math Focus:** Coordinate Planes & Matrix Vector Math
+* **Gameplay Style:** Spatial Physics Navigator
+* **How to Play:** Guide a lost spaceship through an asteroid belt mapped out on a Cartesian coordinate plane. Input movement vectors $(x, y)$ to pilot your ship. Calculate exact line slopes to chart courses around high-gravity black holes that alter your trajectory via dynamic gravitational matrices.
+
+---
+
+## You do not have to read this if you are just playing the game.
+
+## 🛠️ Local Development & Contribution
+
+If you want to run or test these games locally on your machine, follow these simple terminal commands:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd science-fair-2026
+   ```
+3. Open the main game file in your default browser:
+   ```bash
+   open index.html
+   ```
+
+*Note: For testing file changes instantly without browser cache tracking, it is recommended to open `index.html` inside a Private/Incognito browser window.*

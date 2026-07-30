@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;
     let isGameOver = false;
     let targetAngle = 0;
-    const TILT_SPEED = 0.0040; // Radians per update. Faster for more challenge.
+    const TILT_SPEED = 0.006; // Slower, more manageable tilts.
 
     // --- IndexedDB Setup ---
     let db;
@@ -179,14 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
         startTime = Date.now();
         timerInterval = setInterval(updateTimer, 100);
 
-        // Every 5 seconds, set a new target angle for the bowl to tilt towards.
+        // Change the target angle at a slower pace for smoother, easier-to-control tilts.
         setInterval(() => {
             if (!isGameOver) {
-                const randomAngleDegrees = Math.random() * 720 - 360
-            ; // -60 to +60 degrees for more extreme tilts
+                const randomAngleDegrees = (Math.random() * 720) - 360;
                 targetAngle = randomAngleDegrees * (Math.PI / 180);
             }
-        }, 2500); // Choose a new angle every 2.5 seconds instead of 5
+        }, 2400); // Choose a new angle every 2.4 seconds
     }
 
     function updateTimer() {
