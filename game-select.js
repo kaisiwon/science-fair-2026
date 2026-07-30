@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mergeMatrixBtn = document.getElementById('select-merge-matrix');
     const numberNomadBtn = document.getElementById('select-number-nomad');
     const pizzaFractionParlourBtn = document.getElementById('select-pizza-fraction-parlour');
+    const mathDashBtn = document.getElementById('select-math-dash');
 
     numberForgeBtn.addEventListener('click', () => {
         window.location.href = 'number-forge.html';
@@ -53,5 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     pizzaFractionParlourBtn.addEventListener('click', () => {
         window.location.href = 'pizza-fraction-parlour.html';
+    });
+
+    mathDashBtn.addEventListener('click', () => {
+        window.location.href = 'mathdash.html';
     });
 });
