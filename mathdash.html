@@ -1447,7 +1447,7 @@
                     } else if (obs.type === 'pad') {
                         if (!obs.hit) {
                             player.y = player.gravity === 1 ? obs.y - player.h : obs.y + obs.h; // Snap above pad to prevent block overrides
-                            player.dy = JUMP_FORCE * 1.8 * player.gravity; // Give a stronger jump than normal
+                            player.dy = JUMP_FORCE * 1.2 * player.gravity; // Weaker jump than before
                             player.grounded = false;
                             obs.hit = true;
                             setTimeout(() => obs.hit = false, 300);
@@ -1456,7 +1456,7 @@
                     } else if (obs.type === 'redPad') {
                         if (!obs.hit) {
                             player.y = player.gravity === 1 ? obs.y - player.h : obs.y + obs.h; // Snap above pad to prevent block overrides
-                            player.dy = JUMP_FORCE * 2.2 * player.gravity; // Give an even stronger jump
+                            player.dy = JUMP_FORCE * 1.5 * player.gravity; // Weaker jump than before
                             player.grounded = false;
                             obs.hit = true;
                             setTimeout(() => obs.hit = false, 300);
