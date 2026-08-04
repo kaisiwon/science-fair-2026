@@ -61,6 +61,25 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
+        const getOrbsButton = document.createElement('button');
+        getOrbsButton.textContent = 'Get Orbs';
+        getOrbsButton.style.position = 'absolute';
+        getOrbsButton.style.top = '330px';
+        getOrbsButton.style.left = '50%';
+        getOrbsButton.style.transform = 'translateX(-50%)';
+        getOrbsButton.style.padding = '10px 20px';
+        getOrbsButton.style.fontSize = '18px';
+        getOrbsButton.style.backgroundColor = 'rgba(0, 150, 255, 0.8)';
+        getOrbsButton.style.color = '#fff';
+        getOrbsButton.style.border = '2px solid #fff';
+        getOrbsButton.style.borderRadius = '5px';
+        getOrbsButton.style.cursor = 'pointer';
+        getOrbsButton.style.display = 'none'; // Initially hidden
+        document.body.appendChild(getOrbsButton);
+
+        getOrbsButton.addEventListener('click', askMathQuestion);
+
+
         // --- GAME SETTINGS & CONSTANTS ---
         const TILE_SIZE = 40;
         const GRAVITY = 0.65;
@@ -71,71 +90,12 @@
         // 'X' = Block, '^' = Spike, '@' = Level End
         const levelCategories = [
             {
-                name: "Custom Levels",
-                levels: [
-                    {
-                        name: "Level 1: Techno Madness",
-                        song: "Techno Madness", 
-                        audioUrl: "./assets/techno_rage.mp3",
-                        bgColor: "#1a1a2e",
-                        blockColor: "#0f3460",
-                        layout: [
-                            "                                                                                           XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @",
-                            "                                                                                           XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            " + "X".repeat(942),
-                            "                                                 v   v                                     XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            " + "X".repeat(942),
-                            "                                                 XXXXX                                        vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            " + "v".repeat(942),
-                            "                                                                                            B                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        " + " ".repeat(50) + "C" + " ".repeat(891),
-                            "                                                 ^^^^^           XXXXX                       BYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYBYB                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           " + "BY".repeat(75) + "C" + "BY".repeat(395) + "B",
-                            "                                 ^^^             XXXXX           ,   ,                    Y                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          " + " ".repeat(942),
-                            "                                 XXX             XXXXX    O             O XX  OOO           Y ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            " + "^".repeat(942),
-                            "                XXXXX       XX           XX   ^           ^^            O ,C  ^^^       O^.   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            " + "X".repeat(100) + "X".repeat(841),
-                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" + "X".repeat(1000)
-                        ]
-                    },
-                    {
-                        name: "Level 2: Syncopated Doom",
-                        audioUrl: "./assets/adrenaline_rush.mp3",
-                        bgColor: "#2e1a1a",
-                        blockColor: "#600f0f",
-                        layout: [
-                            "                                                                          B    ,,,,,,,,,,,,,,,,,,,,,@",
-                            "                                                                                                    ",
-                            "                                                                              YBYBYBYBYBYBYBYBYBYBYB",
-                            "                                                                                                    ",
-                            "                                                                         XXXX  ^^^^^^^^^^^^^^^^^^^^^",
-                            "                               O XX                XXX           >Y    XXXXXX XXXXXXXXXXXXXXXXXXXXXX",
-                            "                 O      O XXXX           XXXOXXOOXXXvX X O           XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-                            "                   XXXX   ,vvv       XXX ,vv v XXXvv X X   XXXXXX XXXXXXXXXXX                       ",
-                            "             XXX^^.........^^...^^^^ ^........^^^^.^.^.X  ^^^v,v,v,^ XXXXXXXXXX ^^^     ^^^         ",
-                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                        ]
-                    }, 
-                    {   name: "Zoink Challenge",
-                        audioUrl: "./assets/1137996_best-drop-of-all-time.mp3",
-                        bgColor: "#000000",
-                        blockColor: "#f3b04b",
-                        layout: [
-                            "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @", 
-                            "", 
-                            "", 
-                            "", 
-                            "", 
-                            "  W", 
-                            "", 
-                            "", 
-                            "", 
-                            ""
-                        ]
-                    }
-                ]
-            }, 
-            {
-                name: "The Originals",
+                name: "Play",
                 menuMusic: "./assets/584131_geometry-dash-menu-theme.mp3",
                 levels: [
                     {
-                        name: "Geometry Dash - Demo",
-                        song: "Back on Dash - DJVI",
+                        name: "Math Dash - Demo",
+                        song: "BEST DROP OF ALL TIME",
                         audioUrl: "./assets/1137996_best-drop-of-all-time.mp3",
                         bgColor: "#2878ff",
                         blockColor: "#003399",
@@ -153,139 +113,25 @@
                         ] 
                     },
                     {
-                        name: "1. Stereo Madness",
-                        song: "Stereo Madness",
-                        audioUrl: "https://music.apple.com/au/album/stereo-madness-geometry-dash/1276451229?i=1276451230",
+                        name: "1. Impossible Jump",
+                        song: "Explorers",
+                        audioUrl: "./assets/hinkik_-_explorers.mp3",
                         bgColor: "#2878ff",
                         blockColor: "#003399",
                         layout: [
-                            "                                                                                                                                                                                                                                                                                                                               @",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                    XXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                             >                                                                                                                 <                                                                                                ",
-                            "                                                                                                                                              X                                                                                                                                                                                 ",
-                            "                                      ^                         XXX                                                                          XXX            X                    X                      X                                                      X                             XX                                 ",
-                            "                   ^       ^         XXX      ^      XXXX      XXXXXXX        XXXX      XXXX     XXXXX       XXX    XXXXX XXXXX     XXXX   XXXXXXX        XXXXX                XXXXX                  XXXXX     XXXXX        XXXXX          XXXX           XXXXX          XXX XXX        XXXXXX        XXXX     XXXXX        ",
-                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                            "                                                                             @",
+                            "                       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                                   ",
+                            "                                                  X                                                                                                                                                                                                                                                                              ",
+                            "                                                  X                                                                                                                                                                                                     ",
+                            "                                                  X                                                                                                                                                                                                                                                                              ",
+                            "                                                ^ vX                                                                                                                                                                                                                                                                          ",
+                            "                                                X^ vX                                                                                                                              ",
+                            "                                                 X^ vX                                              ",
+                            "                                 W                X^ vX                              ",
+                            "                                                   X^ ,                                  "
                         ]
                     },
-                    {
-                        name: "1. Stereo Madness - Full Version",
-                        song: "Stereo Madness",
-                        audioUrl: "https://music.apple.com/au/album/stereo-madness-geometry-dash/1276451229?i=1276451230",
-                        bgColor: "#2878ff",
-                        blockColor: "#003399",
-                        layout: [
-                            "                                                                                                                                                                                                                                                                                                                               @",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                    XXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                             >                                                                                                                 <                                                                                                ",
-                            "                                                                                                                                              X                                                                                                                                                                                 ",
-                            "                                      ^                         XXX                                                                          XXX            X                    X                      X                                                      X                             XX                                 ",
-                            "                   ^       ^         XXX      ^      XXXX      XXXXXXX        XXXX      XXXX     XXXXX       XXX    XXXXX XXXXX     XXXX   XXXXXXX        XXXXX                XXXXX                  XXXXX     XXXXX        XXXXX          XXXX           XXXXX          XXX XXX        XXXXXX        XXXX     XXXXX        ",
-                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                        ]
-                    },
-                    {
-                        name: "2. Back on Track",
-                        song: "Back on Track - Cut Version",
-                        audioUrl: "https://music.apple.com/au/album/back-on-track/695744161?i=695745058",
-                        bgColor: "#a328ff",
-                        blockColor: "#550099",
-                        layout: [
-                            "                                                                                                                                                                                                                                                                                                                               @",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                    XXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
-                            "                                                                                                                   X       X         X      X            X      X                                                                                                                                                               ",
-                            "                                                                                                             >     X       X         X      X            X      X                                  <                                                                                                                            ",
-                            "                                                                                                                   X       X         X      X            X      X                                                                                                                                                               ",
-                            "                                                                XXXX                          XX                   X   C   X         X   C  X            X   C  X                  X                             P  XX                                                                                                        ",
-                            "                   P              P XX      XXXXXX       P XX      P XX   XXXX      ^^              XX P   XX P   XX P        X       X         X      X            X      X       ^^        XXX            P   X          XXXXXX          XXX P    XXX P    XXX P                                                                       ",
-                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                        ]
-                    },
-                    {
-                        name: "2. Back on Track - Full Version",
-                        song: "Back on Track",
-                        audioUrl: "https://music.apple.com/au/album/back-on-track/695744161?i=695745058",
-                        bgColor: "#a328ff",
-                        blockColor: "#550099",
-                        layout: [
-                            "                                                                                                                                                                                                                                                                                                                               @",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                    XXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
-                            "                                                                                                                   X       X         X      X            X      X                                                                                                                                                               ",
-                            "                                                                                                             >     X       X         X      X            X      X                                  <                                                                                                                            ",
-                            "                                                                                                                   X       X         X      X            X      X                                                                                                                                                               ",
-                            "                                                                XXXX                          XX                   X   C   X         X   C  X            X   C  X                  X                             P  XX                                                                                                        ",
-                            "                   P              P XX      XXXXXX       P XX      P XX   XXXX      ^^              XX P   XX P   XX P        X       X         X      X            X      X       ^^        XXX            P   X          XXXXXX          XXX P    XXX P    XXX P                                                                       ",
-                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                        ]
-                    },
-                    {
-                        name: "3. Polargeist",
-                        song: "Polargeist - Cut Version",
-                        audioUrl: "./assets/polargeist_cut.mp3",
-                        bgColor: "#28ff8c",
-                        blockColor: "#00994d",
-                        layout: [
-                            "                                                                                                                                                                                                                                                                                                                               @",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                    XXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                   O                   O                                                                                                                                                                                        ",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                   O            XXXX              O           XXXX             O             XX             O                                                                  O            O                                                                                                   ",
-                            "                   O       O         XXX      ^           ^   XXXXXXXX      ^                                                                    ^   XXXXXXXX      ^           ^    XXXXXXXX             O    O      XXXXX         O     XXXXX         O     XXXXX                  XXXXXX           XXXXXXX           XXXXXXX           XXXXXXX                                       ",
-                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                        ]
-                    },
-                    {
-                        name: "3.1. Polargeist - Full Version",
-                        song: "Polargeist - Full Version",
-                        audioUrl: "./assets/523561_polargeist.mp3",
-                        bgColor: "#28ff8c",
-                        blockColor: "#00994d",
-                        layout: [
-                            "                                                                                                                                                                                                                                                                                                                               @",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                                                                                                                                                                                                                                ",
-                            "                                                                                                                   OXXXXXXX           XXXXXX              XXXXXX                                                                                                                                                                ",
-                            "                                                                                                                   O                   O                                                                                                                                                                                        ",
-                            "                                                                                                                 O                   O                                                                                                                                                                                        ",
-                            "                                                                                                               O                                                                                                                                                                                                              ",
-                            "                                                   O            XXXX              O           XXXX           O             XXXX             O                                                                  O            O                                                                                                   ",
-                            "                   O       O         XXX      ^           ^   XXXXXXXX      ^           ^   XXXXXXXX      ^           ^    XXXXXXXX             O    O      XXXXX         O     XXXXX         O     XXXXX                  XXXXXX           XXXXXXX           XXXXXXX           XXXXXXX                                       ",
-                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                        ]
-                    },
-                    {
-                        name: "4. Object Showcase",
-                        song: "Stereo Madness",
-                        audioUrl: "https://music.apple.com/au/album/stereo-madness-geometry-dash/1276451229?i=1276451230",
-                        bgColor: "#ff5500",
-                        blockColor: "#aa1100",
-                        layout: [
-                            "                                                                                                                                                                                               @",
-                            "                                                                                                                                                                                                ",
-                            "                                                                         XXXXXXXXXXXXXXXXXXXX                                                                                                   ",
-                            "                                                                              v   ,   v                                                                                                           ",
-                            "                                                                                            B                                                                                                   ",
-                            "                                                                                                               C                       C                       C                                ",
-                            "                                                     O                                                                                                                                          ",
-                            "                                                                                                               X                                                                                ",
-                            "                                                                       Y                             >         X     <           U   ^ X ^   <           W   ^ X ^   <                          ",
-                            "XXXXX^XXXXX.XXXXX^XXPXXXXRXXXXX         XXXXXXXXXX         XXXXXXXXXXXXX       ^       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                        ]
-                    }
-                ]
+                    ]
             }
         ];
 
@@ -766,6 +612,24 @@
             playMenuMusic();
         }
 
+        function askMathQuestion() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const num3 = Math.floor(Math.random() * 20) + 1;
+            const question = `What is (${num1} * ${num2}) + ${num3}?`;
+            const correctAnswer = (num1 * num2) + num3;
+            
+            const userAnswer = prompt(question);
+            
+            if (userAnswer !== null && parseInt(userAnswer) === correctAnswer) {
+                totalOrbs += 50;
+                localStorage.setItem("gd_orbs", totalOrbs);
+                alert("Correct! You earned 50 orbs.");
+            } else {
+                alert("Sorry, that's not correct.");
+            }
+        }
+
         // --- INPUT HANDLING ---
         function jump() {
             if (gameState === "COMPLETE" || gameState === "ALL_CLEAR") {
@@ -1015,12 +879,18 @@
                     const playBtnX = canvas.width / 2 - 160;
                     const playBtnY = 245; // Moved down slightly to fit the progress bar
                     if (mouseX >= playBtnX && mouseX <= playBtnX + 150 && mouseY >= playBtnY && mouseY <= playBtnY + 40) {
-                        attempts = 1;
-                        isPracticeMode = false;
-                        checkpoints = [];
-                        loadLevel(currentCategoryIndex, currentLevelIndex);
-                        gameState = "PLAYING";
-                        if (bgMusic.src) bgMusic.play().catch(e => console.log("Audio play failed", e));
+                        if (totalOrbs >= 100) {
+                            totalOrbs -= 100;
+                            localStorage.setItem("gd_orbs", totalOrbs);
+                            attempts = 1;
+                            isPracticeMode = false;
+                            checkpoints = [];
+                            loadLevel(currentCategoryIndex, currentLevelIndex);
+                            gameState = "PLAYING";
+                            if (bgMusic.src) bgMusic.play().catch(e => console.log("Audio play failed", e));
+                        } else {
+                            alert("You need at least 100 orbs to play a level. Answer math questions to get more orbs!");
+                        }
                         return;
                     }
                     
@@ -1033,6 +903,14 @@
                         loadLevel(currentCategoryIndex, currentLevelIndex);
                         gameState = "PLAYING";
                         if (bgMusic.src) bgMusic.play().catch(e => console.log("Audio play failed", e));
+                        return;
+                    }
+
+                    // "Get Orbs" Button
+                    const getOrbsBtnX = canvas.width / 2 - 75;
+                    const getOrbsBtnY = 300;
+                    if (mouseX >= getOrbsBtnX && mouseX <= getOrbsBtnX + 150 && mouseY >= getOrbsBtnY && mouseY <= getOrbsBtnY + 40) {
+                        askMathQuestion();
                         return;
                     }
                 } else if (menuState === "SKIN_SELECT") {
@@ -1447,7 +1325,7 @@
                     } else if (obs.type === 'pad') {
                         if (!obs.hit) {
                             player.y = player.gravity === 1 ? obs.y - player.h : obs.y + obs.h; // Snap above pad to prevent block overrides
-                            player.dy = JUMP_FORCE * 1.2 * player.gravity; // Weaker jump than before
+                            player.dy = JUMP_FORCE * 1.8 * player.gravity; // Give a stronger jump than normal
                             player.grounded = false;
                             obs.hit = true;
                             setTimeout(() => obs.hit = false, 300);
@@ -1456,7 +1334,7 @@
                     } else if (obs.type === 'redPad') {
                         if (!obs.hit) {
                             player.y = player.gravity === 1 ? obs.y - player.h : obs.y + obs.h; // Snap above pad to prevent block overrides
-                            player.dy = JUMP_FORCE * 1.5 * player.gravity; // Weaker jump than before
+                            player.dy = JUMP_FORCE * 2.2 * player.gravity; // Give an even stronger jump
                             player.grounded = false;
                             obs.hit = true;
                             setTimeout(() => obs.hit = false, 300);
@@ -1797,6 +1675,12 @@
 
         // --- RENDERING ---
         function draw() {
+            if (menuState === "LEVEL_SELECT") {
+                getOrbsButton.style.display = 'block';
+            } else {
+                getOrbsButton.style.display = 'none';
+            }
+
             const currentLevel = levelCategories[currentCategoryIndex]?.levels[currentLevelIndex] || levelCategories[0].levels[0];
             
             // Clear screen & draw background

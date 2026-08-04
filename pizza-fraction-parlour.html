@@ -4,10 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pizza Fraction Parlour</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="pizza-fraction-parlour.css">
 </head>
 <body>
-    <h1>Pizza Fraction Parlour</h1>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>Pizza Fraction Parlour</h1>
+            <div class="header-top-row">
+                <div class="stats-display" id="score-display">Score: 0</div>
+                <div class="stats-display" id="level-display">Level: 1</div>
+            </div>
+        </div>
+        <div class="game-board">
+            <div id="customer-order"></div>
+            <canvas id="pizza-canvas" width="300" height="300"></canvas>
+            <div id="controls">
+                <button class="control-btn" id="slice-btn">Slice</button>
+                <button class="control-btn" id="reset-btn">Reset</button>
+                <button class="control-btn primary" id="serve-btn">Serve</button>
+            </div>
+        </div>
+         <a href="index.html" class="back-link">Back to Menu</a>
+    </div>
     <script src="pizza-fraction-parlour.js"></script>
 </body>
 </html>

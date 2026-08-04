@@ -4,10 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Merge Matrix</title>
-    <link rel="stylesheet" href="merge-matrix.css">
+    <link rel="stylesheet" href="./merge-matrix.css">
 </head>
 <body>
-    <h1>Merge Matrix</h1>
-    <script src="merge-matrix.js"></script>
+    <main class="game-shell">
+        <header class="topbar">
+            <div>
+                <h1>Merge Matrix</h1>
+                <p>Slide tiles to build bigger values. Operator tiles boost whole rows or columns.</p>
+            </div>
+            <button id="restart-btn">New Game</button>
+        </header>
+
+        <section class="hud">
+            <div class="score-card">Score <strong id="score">0</strong></div>
+            <div id="status" class="status">Use your arrow keys or swipe to begin.</div>
+        </section>
+
+        <section id="board" class="board" aria-label="Merge Matrix board"></section>
+    </main>
+
+    <script src="./merge-matrix.js"></script>
 </body>
 </html>
